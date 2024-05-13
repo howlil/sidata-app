@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import Icon from "../icon";
+import Icon from "../ui/Icon";
 import { useActiveRoute } from "@/utils/ActiveRouteContex";
 
 export default function ActiveRoute({ href, icon, label }) {
