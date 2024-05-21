@@ -1,19 +1,20 @@
-import { useState } from 'react';
-import a from '/public/loga.svg';
-import b from '/public/logb.svg';
-import logo from '/public/logosidata.svg';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import Toast from '@/components/ui/Toast';
-import ubahPassword from './api/ubahPassword';
+import { useState } from "react";
+import a from "/public/loga.svg";
+import b from "/public/logb.svg";
+import logo from "/public/logosidata.svg";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Toast from "@/components/ui/Toast";
+import ubahPassword from "./api/ubahPassword";
 
 export default function UbahSandi() {
-  const [email, setEmail] = useState('');
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPW, setConfirmPW] = useState("");
   const [toast, setToast] = useState({
     isVisible: false,
-    message: '',
+    message: "",
     isSuccess: true,
   });
 
@@ -24,14 +25,19 @@ export default function UbahSandi() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await ubahPassword({ email, oldPassword, newPassword });
+      const response = await ubahPassword({ email, oldPassword, newPassword ,confirmNewPassword:confirmPW });
       if (response.success) {
-        setToast({ isVisible: true, message: 'Password updated successfully!', isSuccess: true });
-        setEmail('');
-        setOldPassword('');
-        setNewPassword('');
+        setToast({
+          isVisible: true,
+          message: "Password updated successfully!",
+          isSuccess: true,
+        });
+        setEmail("");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPW("");
       } else {
-        throw new Error(response.message || 'Failed to update password.');
+        throw new Error(response.message || "Failed to update password.");
       }
     } catch (error) {
       console.error(error);
@@ -40,19 +46,20 @@ export default function UbahSandi() {
   };
 
   const hideToast = () => {
-    setToast(prev => ({ ...prev, isVisible: false }));
+    setToast((prev) => ({ ...prev, isVisible: false }));
   };
 
   return (
     <div className="bg-ijau-100 h-screen flex items-center justify-center overflow-hidden">
       <img src={a} alt="Logo A" className="absolute left-0 top-0 w-8/12" />
-      <img src={b} alt="Background B" className="absolute w-full right-0 bottom-0" />
-      <section className="bg-white z-50 shadow-sm rounded-md relative w-1/3 px-8 py-12">
-        <div className="flex justify-center">
-          <img src={logo} alt="Logo Sidata" />
-        </div>
-        <div className="my-3">
-          <h3 className="mt-8 font-semibold text-xl">Ubah Sandi</h3>
+      <img
+        src={b}
+        alt="Background B"
+        className="absolute w-full right-0 bottom-0"
+      />
+      <section className="bg-white z-50 shadow-sm rounded-md relative w-1/3 px-8 py-10">
+        <div className="mb-4">
+          <h3 className="mt-2 font-semibold text-xl">Ubah Sandi</h3>
           <hr className="w-1/6 border-b-4 border-ijau-100" />
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -77,7 +84,16 @@ export default function UbahSandi() {
             value={newPassword}
             onChange={handleInputChange(setNewPassword)}
           />
-          <Button variant="default" type="submit">Ubah Sandi</Button>
+          <Input
+            type="password"
+            label="Confirmasi Password Baru"
+            placeholder="******"
+            value={confirmPW}
+            onChange={handleInputChange(setConfirmPW)}
+          />
+          <Button variant="default" type="submit">
+            Ubah Sandi
+          </Button>
         </form>
         {toast.isVisible && (
           <Toast

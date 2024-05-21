@@ -2,7 +2,7 @@ const prisma = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-exports.buatkAkun = async (req, res) => {
+exports.buatAkun = async (req, res) => {
   try {
     const { nama, email, password } = req.body;
 
@@ -134,10 +134,11 @@ exports.logout = async (req, res) => {
     res.status(200).json({ success: true, message: "Logout berhasil" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
-
 
 exports.ubahPassword = async (req, res) => {
   const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
@@ -147,8 +148,6 @@ exports.ubahPassword = async (req, res) => {
       .status(400)
       .json({ success: false, message: "Isi Semua Inputanya" });
   }
-
-
 
   try {
     const admin = await prisma.admin.findUnique({ where: { email } });
@@ -173,7 +172,8 @@ exports.ubahPassword = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) {``
+    if (!isMatch) {
+      ``;
       return res
         .status(401)
         .json({ success: false, message: "Password Lama Salah" });
@@ -184,7 +184,6 @@ exports.ubahPassword = async (req, res) => {
         message: "Password baru dan konfirmasi password baru tidak cocok",
       });
     }
-
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -216,3 +215,52 @@ exports.ubahPassword = async (req, res) => {
   }
 };
 
+exports.buatAkunUser = async (req, res) => {
+  try {
+    const { nama, email, password } = req.body;
+
+    if (!email || !password || !nama) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Silahkan lengkapi semua input" });
+    }
+
+    let role;
+    if (email.endsWith("@student.id")) {
+      role = "mahasiswa";
+    } else if (email.endsWith("@dosen.id")) {
+      role = "dosen";
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email tidak valid" });
+    }
+
+    const existingUser = await prisma[role].findUnique({ where: { email } });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Akun dengan email ini sudah ada" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma[role].create({
+      data: {
+        nama,
+        email,
+        password: hashedPassword,
+        role: role.toUpperCase(),
+      },
+    });
+
+    res
+      .status(201)
+      .json({ success: true, message: "Akun berhasil dibuat", data: newUser });
+  } catch (error) {
+    console.error("Error creating account:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};

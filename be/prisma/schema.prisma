@@ -14,6 +14,7 @@ model mahasiswa {
   nim              String?            @unique
   alamat           String?
   noHp             String?
+  foto             String?  
   password         String
   tokens           token[]
   judul            judul?
@@ -30,6 +31,7 @@ model dosen {
   email            String         @unique
   nip              String?         @unique
   alamat           String?
+  foto             String?  
   noHp             String?
   password         String
   tokens           token[]

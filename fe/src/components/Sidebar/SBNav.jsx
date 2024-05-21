@@ -24,7 +24,7 @@ export default function SidebarNav() {
     navData = dataDosen;
   } else if (role === "ADMIN") {
     navData = dataAdmin;
-  } else {
+  }else if (role === "MAHASISWA") {   
     navData = datamhs;
   }
 

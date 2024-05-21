@@ -1,8 +1,8 @@
-
 export default async function ubahPassword({
   email,
   oldPassword,
   newPassword,
+  confirmNewPassword
 }) {
   const myHeaders = new Headers();
 
@@ -13,6 +13,7 @@ export default async function ubahPassword({
   urlencoded.append("email", email);
   urlencoded.append("oldPassword", oldPassword);
   urlencoded.append("newPassword", newPassword);
+  urlencoded.append("confirmNewPassword", confirmNewPassword);
 
   const requestOptions = {
     method: "PUT",

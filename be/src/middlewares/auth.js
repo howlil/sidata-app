@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const prisma = require("../config/db");
 
-const authenticateToken = async (req, res, next) => {
+exports.authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
@@ -51,4 +51,13 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-module.exports = authenticateToken;
+exports.authorizeRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ success: false, message: "Anda tidak memiliki izin untuk mengakses resource ini" });
+    }
+    next();
+  };
+};
+
+
