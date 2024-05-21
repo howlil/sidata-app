@@ -1,29 +1,28 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import Toast from '@/components/ui/Toast';
-import daftarAkun from './api/daftarAkun';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Toast from "@/components/ui/Toast";
+import daftarAkun from "./api/daftarAkun";
 
 export default function Daftar() {
   const [form, setForm] = useState({
-    nama: '',
-    email: '',
-    password: '',
+    nama: "",
+    email: "",
+    password: "",
   });
   const [toast, setToast] = useState({
     isVisible: false,
-    message: '',
+    message: "",
     isSuccess: true,
   });
-  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await daftarAkun(form);
       if (!response) {
-        throw new Error('Invalid response from daftarAkun');
+        throw new Error("Invalid response from daftarAkun");
       }
       setToast({
         isVisible: true,
@@ -41,7 +40,7 @@ export default function Daftar() {
       setToast({
         isVisible: true,
         isSuccess: false,
-        message: error.message || 'Failed to register.',
+        message: error.message || "Failed to register.",
       });
     }
   };
@@ -61,21 +60,21 @@ export default function Daftar() {
         label="Nama Lengkap"
         placeholder="Inputkan Nama Lengkap"
         value={form.nama}
-        onChange={handleInputChange('nama')}
+        onChange={handleInputChange("nama")}
       />
       <Input
         type="text"
         label="Email"
         placeholder="Inputkan Email"
         value={form.email}
-        onChange={handleInputChange('email')}
+        onChange={handleInputChange("email")}
       />
       <Input
         type="password"
         label="Kata Sandi"
         placeholder="*********"
         value={form.password}
-        onChange={handleInputChange('password')}
+        onChange={handleInputChange("password")}
       />
       <p className="text-sm text-neutral-400">
         Sudah memiliki akun?

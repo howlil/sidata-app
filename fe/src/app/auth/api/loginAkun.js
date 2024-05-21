@@ -17,7 +17,7 @@ export default async function LoginAkun({ email, password }) {
     const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/login`;
     const response = await fetch(apiUrl, requestOptions);
     const data = await response.json();
-    const token = data.data.token;
+    const token = data.token;
     console.log("====================================");
     console.log(token);
     console.log("====================================");

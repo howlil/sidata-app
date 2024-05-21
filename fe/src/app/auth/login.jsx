@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
-import loginAkun from "./api/loginAkun"; 
+import loginAkun from "./api/loginAkun";
+import { jwtDecode } from 'jwt-decode'
+
 export default function Login() {
   const [form, setForm] = useState({
     email: "",
@@ -23,13 +25,28 @@ export default function Login() {
       if (!response) {
         throw new Error("Invalid response from loginAkun");
       }
+
       setToast({
         isVisible: true,
         isSuccess: response.success,
         message: response.message,
       });
-      if (response.success) {
-        navigate("/mhs/dashboard");
+
+      if (response.success && response.token) {
+        const decodedToken = jwtDecode(response.token);
+        if (decodedToken && decodedToken.role) {
+          if (decodedToken.role === "ADMIN") {
+            navigate("/admin/dashboard");
+          } else if (decodedToken.role === "MAHASISWA") {
+            navigate("/mhs/dashboard");
+          } else if (decodedToken.role === "DOSEN") {
+            navigate("/dosen/dashboard");
+          } else {
+            throw new Error("Invalid role in token");
+          }
+        } else {
+          throw new Error("Failed to decode token or role is missing");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -65,12 +82,12 @@ export default function Login() {
         value={form.password}
         onChange={handleInputChange("password")}
       />
-      <p className="text-sm text-neutral-400">
+      {/* <p className="text-sm text-neutral-400">
         Belum memiliki akun?
         <Link to="/register" className="text-ijau-100 ml-1 underline">
           Daftar disini
         </Link>
-      </p>
+      </p> */}
       <Button variant="default" type="submit">
         Login
       </Button>

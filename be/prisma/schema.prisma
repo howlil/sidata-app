@@ -7,31 +7,199 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model mahasiswa {
+  id               String            @id @default(cuid())
+  nama             String
+  email            String            @unique
+  nim              String?            @unique
+  alamat           String?
+  noHp             String?
+  password         String
+  tokens           token[]
+  judul            judul?
+  ide              ide?
+  konsultasiKaprodi konsultasiKaprodi[]
+  pendaftaranTA    pendaftaranTA?
+  bimbinganTA      bimbinganTA[]
+  role             Role              @default(MAHASISWA)
+}
+
+model dosen {
+  id               String         @id @default(cuid())
+  nama             String
+  email            String         @unique
+  nip              String?         @unique
+  alamat           String?
+  noHp             String?
+  password         String
+  tokens           token[]
+  bidang           bidangDosen[]
+  ide              ideDosen[]
+  calonDospem1     ide[]          @relation("CalonDospem1")
+  calonDospem2     ide[]          @relation("CalonDospem2")
+  dosenPembimbing1 judul[]        @relation("DosenPembimbing1")
+  dosenPembimbing2 judul[]        @relation("DosenPembimbing2")
+  judul            judulDosen[]
+  bimbinganTA      bimbinganTA[]
+  role             Role           @default(DOSEN)
+}
+
+model admin {
+  id               String           @id @default(cuid())
+  nama             String?
+  email            String           @unique
+  password         String
+  tokens           token[]
+  konfirmasiTA     pendaftaranTA[]
+  konfirmasiKaprodi konsultasiKaprodi[]
+  role             Role             @default(ADMIN)
+}
 
 model token {
-  id                String  @id @default(cuid())
-  token             String  @unique @db.VarChar(255)
-  createdAt         DateTime  @default(now())
-  expiresAt         DateTime
-  userId            String
-  User              user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id               String   @id @default(cuid())
+  token            String   @db.Text
+  createdAt        DateTime @default(now())
+  expiredAt        DateTime 
+  mahasiswaId      String?
+  dosenId          String?
+  adminId          String?
+  mahasiswa        mahasiswa? @relation(fields: [mahasiswaId], references: [id])
+  dosen            dosen?    @relation(fields: [dosenId], references: [id])
+  admin            admin?    @relation(fields: [adminId], references: [id])
 }
 
-model user {
-  id        String    @id@default(uuid())
-  nama      String
-  email     String    @unique
-  password  String
-  alamat    String?
-  noHp      String?
-  role      role
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
-  token     token[]
+model ide {
+  id               String    @id @default(cuid())
+  namaMahasiswa    String
+  nim              String
+  ideTugasAkhir    String
+  bidangId         String
+  calonDospem1Id   String?
+  calonDospem2Id   String?
+  status           Status
+  bidang           bidang    @relation(fields: [bidangId], references: [id])
+  calonDospem1     dosen?    @relation("CalonDospem1", fields: [calonDospem1Id], references: [id])
+  calonDospem2     dosen?    @relation("CalonDospem2", fields: [calonDospem2Id], references: [id])
+  mahasiswaId      String    @unique
+  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
+  ideDosen         ideDosen[]
 }
 
-enum role {
-  Mahasiswa
-  Dosen
-  Admin
+model ideDosen {
+  ideId            String
+  dosenId          String
+  ide              ide       @relation(fields: [ideId], references: [id])
+  dosen            dosen     @relation(fields: [dosenId], references: [id])
+  @@id([ideId, dosenId])
+}
+
+model judul {
+  id               String    @id @default(cuid())
+  namaMahasiswa    String
+  nim              String
+  angkatan         String
+  smtSaatIni       String
+  bidangPeminatan  String
+  dosenPembimbing1Id String?
+  dosenPembimbing2Id String?
+  judul            String
+  status           Status
+  bidangId         String
+  bidang           bidang    @relation(fields: [bidangId], references: [id])
+  dosenPembimbing1 dosen?    @relation("DosenPembimbing1", fields: [dosenPembimbing1Id], references: [id])
+  dosenPembimbing2 dosen?    @relation("DosenPembimbing2", fields: [dosenPembimbing2Id], references: [id])
+  mahasiswaId      String    @unique
+  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
+  judulDosen       judulDosen[]
+}
+
+model judulDosen {
+  judulId          String
+  dosenId          String
+  judul            judul     @relation(fields: [judulId], references: [id])
+  dosen            dosen     @relation(fields: [dosenId], references: [id])
+  @@id([judulId, dosenId])
+}
+
+model pendaftaranTA {
+  id                   String      @id @default(cuid())
+  nama                 String
+  nim                  String
+  bidangPeminatanId    String
+  judulTugasAkhir      String
+  transkripNilai       String
+  buktiLulusBahasa     String
+  buktiKRS             String
+  suratPenunjukanDosen String
+  formPermohonanIzinKuliah String
+  buktiKP              String
+  buktiMengambilMataKuliah String
+  status               Status
+  mahasiswaId          String      @unique
+  mahasiswa            mahasiswa @relation(fields: [mahasiswaId], references: [id])
+  bidang               bidang    @relation(fields: [bidangPeminatanId], references: [id])
+  adminId              String
+  admin                admin     @relation(fields: [adminId], references: [id])
+}
+
+model bidang {
+  id               String    @id @default(cuid())
+  bidang           String
+  dosen            bidangDosen[]
+  ide              ide[]
+  judul            judul[]
+  pendaftaranTA    pendaftaranTA[]
+}
+
+model bidangDosen {
+  bidangId         String
+  dosenId          String
+  bidang           bidang    @relation(fields: [bidangId], references: [id])
+  dosen            dosen     @relation(fields: [dosenId], references: [id])
+  @@id([bidangId, dosenId])
+}
+
+model bimbinganTA {
+  id               String    @id @default(cuid())
+  dosenId          String
+  mahasiswaId      String
+  nim              String
+  judulTugasAkhir  String
+  progres          String
+  kendala          String
+  jadwalBimbingan  DateTime
+  status           Status
+  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
+  dosen            dosen     @relation(fields: [dosenId], references: [id])
+}
+
+model konsultasiKaprodi {
+  mahasiswaId      String
+  adminId          String
+  kendala          String
+  status           Status
+  jadwalKonsultasi DateTime
+  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
+  admin            admin     @relation(fields: [adminId], references: [id])
+  @@id([mahasiswaId, adminId])
+}
+
+model notifikasi {
+  id               String    @id @default(cuid())
+  pengirimId       String
+  penerimaId       String
+  pesan            String
+  waktu            DateTime  @default(now())
+}
+
+enum Role {
+  ADMIN
+  MAHASISWA
+  DOSEN
+}
+
+enum Status {
+  DISETUJUI
+  DIPROSES
+  DITOLAK
 }

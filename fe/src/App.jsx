@@ -8,6 +8,7 @@ import {
 import Auth from "./app/auth";
 import UbahSandi from "./app/auth/ubahsandi";
 import DashboardMhs from "./app/mahasiswa/dashboard";
+import DashboardAdmin from "./app/admin/dashboard";
 import NotFound from "./NotFound";
 import { ActiveRouteProvider } from "./utils/ActiveRouteContex";
 
@@ -26,6 +27,9 @@ export default function App() {
             {/* mahasiswa */}
             <Route path="/mhs/dashboard" element={<DashboardMhs />} />
             {/* Admin */}
+            <Route path="/admin/dashboard" element={<DashboardAdmin />} />
+            {/* Admin */}
+
             {/* Dosen */}
           </Routes>
         </ActiveRouteProvider>

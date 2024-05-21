@@ -5,40 +5,48 @@ const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
-      res.status(404).json({
+      return res.status(401).json({
         success: false,
         message: "Masukkan token terlebih dahulu",
       });
     }
 
     const token = authHeader && authHeader.split(" ")[1];
-    if (token == null) return res.sendStatus(401);
-    console.log(token);
+    if (token == null)
+      return res.status(401).json({
+        success: false,
+        message: "Token tidak ditemukan dalam header",
+      });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    jwt.verify(token, process.env.ACCESS_SECRET_KEY, async (err, decoded) => {
       if (err) {
-        return res.status(401).json({ success: false, message: err });
+        return res.status(401).json({
+          success: false,
+          message: "Token tidak valid atau telah kadaluwarsa",
+        });
       }
 
       const isToken = await prisma.token.findFirst({
         where: { token },
       });
-      console.log(isToken);
-      if (!isToken)
-        return res
-          .status(401)
-          .json({
-            success: false,
-            message: "Tidak ada token atau sudah logout sebelumnya",
-          });
+
+      if (!isToken) {
+        return res.status(401).json({
+          success: false,
+          message: "Token tidak ditemukan atau sudah logout sebelumnya",
+        });
+      }
 
       req.user = decoded;
+      req.tokenId = isToken.id;
+      req.token = token;
       next();
     });
   } catch (error) {
-    res.status(404).json({
+    console.error("Authentication error:", error);
+    res.status(500).json({
       success: false,
-      message: "Session Token Has Expired",
+      message: "Terjadi kesalahan pada server",
     });
   }
 };
