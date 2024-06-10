@@ -1,207 +1,190 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model mahasiswa {
-  id               String            @id @default(cuid())
-  nama             String
-  email            String            @unique
-  nim              String?            @unique
-  alamat           String?
-  noHp             String?
-  foto             String?  
-  password         String
-  tokens           token[]
-  judul            judul?
-  ide              ide?
-  konsultasiKaprodi konsultasiKaprodi[]
-  pendaftaranTA    pendaftaranTA?
-  bimbinganTA      bimbinganTA[]
-  role             Role              @default(MAHASISWA)
+model Admin {
+  adminId   String   @id @default(cuid())
+  nama      String
+  email     String @unique
+  password  String
+  Token     Token[]
+  JadwalKonsulProdi JadwalKonsulProdi[]
+  Dokumen   Dokumen[]
 }
 
-model dosen {
-  id               String         @id @default(cuid())
-  nama             String
-  email            String         @unique
-  nip              String?         @unique
-  alamat           String?
-  foto             String?  
-  noHp             String?
-  password         String
-  tokens           token[]
-  bidang           bidangDosen[]
-  ide              ideDosen[]
-  calonDospem1     ide[]          @relation("CalonDospem1")
-  calonDospem2     ide[]          @relation("CalonDospem2")
-  dosenPembimbing1 judul[]        @relation("DosenPembimbing1")
-  dosenPembimbing2 judul[]        @relation("DosenPembimbing2")
-  judul            judulDosen[]
-  bimbinganTA      bimbinganTA[]
-  role             Role           @default(DOSEN)
+model Token {
+  tokenId     String  @id @default(cuid())
+  token       String
+  mahasiswaId String?
+  dosenId     String?
+  adminId     String?
+  Mahasiswa   Mahasiswa? @relation(fields: [mahasiswaId], references: [idMahasiswa])
+  Dosen       Dosen? @relation(fields: [dosenId], references: [idDosen])
+  Admin       Admin? @relation(fields: [adminId], references: [adminId])
 }
 
-model admin {
-  id               String           @id @default(cuid())
-  nama             String?
-  email            String           @unique
-  password         String
-  tokens           token[]
-  konfirmasiTA     pendaftaranTA[]
-  konfirmasiKaprodi konsultasiKaprodi[]
-  role             Role             @default(ADMIN)
+model TA {
+  idTA         String    @id @default(cuid())
+  idMahasiswa  String    @unique
+  ideTA        String
+  deskrisiIde  String
+  judulTA      String?
+  bidangId     String
+  statusTA     statusTa
+  status       status
+  Mahasiswa    Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
+  Bidang       Bidang @relation(fields: [bidangId], references: [bidangId])
+  DosenPembimbingTA DosenPembimbingTA[]
+  DaftarTA     DaftarTA[]
 }
 
-model token {
-  id               String   @id @default(cuid())
-  token            String   @db.Text
-  createdAt        DateTime @default(now())
-  expiredAt        DateTime 
-  mahasiswaId      String?
-  dosenId          String?
-  adminId          String?
-  mahasiswa        mahasiswa? @relation(fields: [mahasiswaId], references: [id])
-  dosen            dosen?    @relation(fields: [dosenId], references: [id])
-  admin            admin?    @relation(fields: [adminId], references: [id])
+model DosenPembimbingTA {
+  idTA             String
+  dosenPembimbinID String
+  TA               TA @relation(fields: [idTA], references: [idTA])
+  DosenPembimbing  DosenPembimbing @relation(fields: [dosenPembimbinID], references: [id])
+  @@id([idTA, dosenPembimbinID])
 }
 
-model ide {
-  id               String    @id @default(cuid())
-  namaMahasiswa    String
-  nim              String
-  ideTugasAkhir    String
-  bidangId         String
-  calonDospem1Id   String?
-  calonDospem2Id   String?
-  status           Status
-  bidang           bidang    @relation(fields: [bidangId], references: [id])
-  calonDospem1     dosen?    @relation("CalonDospem1", fields: [calonDospem1Id], references: [id])
-  calonDospem2     dosen?    @relation("CalonDospem2", fields: [calonDospem2Id], references: [id])
-  mahasiswaId      String    @unique
-  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
-  ideDosen         ideDosen[]
+model DosenPembimbing {
+  id             String @id @default(cuid())
+  dosenId        String
+  tipePembimbing tipePembimbing
+  Dosen          Dosen @relation(fields: [dosenId], references: [idDosen])
+  DosenPembimbingTA DosenPembimbingTA[]
+  JadwalBimbinganDosen JadwalBimbinganDosen[]
 }
 
-model ideDosen {
-  ideId            String
-  dosenId          String
-  ide              ide       @relation(fields: [ideId], references: [id])
-  dosen            dosen     @relation(fields: [dosenId], references: [id])
-  @@id([ideId, dosenId])
+model DaftarTA {
+  daftarTAId     String  @id @default(cuid())
+  idMahasiswa    String  @unique
+  idTA           String  @unique
+  transkripNilai String
+  buktiLulus     String
+  buktiKRS       String
+  suratTugas     String
+  suratIzinKuliah String
+  buktiKP        String
+  status         status
+  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
+  TA             TA @relation(fields: [idTA], references: [idTA])
 }
 
-model judul {
-  id               String    @id @default(cuid())
-  namaMahasiswa    String
-  nim              String
-  angkatan         String
-  smtSaatIni       String
-  bidangPeminatan  String
-  dosenPembimbing1Id String?
-  dosenPembimbing2Id String?
-  judul            String
-  status           Status
-  bidangId         String
-  bidang           bidang    @relation(fields: [bidangId], references: [id])
-  dosenPembimbing1 dosen?    @relation("DosenPembimbing1", fields: [dosenPembimbing1Id], references: [id])
-  dosenPembimbing2 dosen?    @relation("DosenPembimbing2", fields: [dosenPembimbing2Id], references: [id])
-  mahasiswaId      String    @unique
-  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
-  judulDosen       judulDosen[]
+model Mahasiswa {
+  idMahasiswa           String        @id @default(cuid())
+  foto                  String?
+  nama                  String
+  nim                   String
+  email                 String @unique
+  password              String
+  alamat                String
+  Token                 Token[]
+  TA                    TA?
+  DaftarTA              DaftarTA?
+  JadwalBimbinganDosen  JadwalBimbinganDosen[]
+  JadwalKonsulProdi     JadwalKonsulProdi[]
+  Message               Message[]
 }
 
-model judulDosen {
-  judulId          String
-  dosenId          String
-  judul            judul     @relation(fields: [judulId], references: [id])
-  dosen            dosen     @relation(fields: [dosenId], references: [id])
-  @@id([judulId, dosenId])
-}
-
-model pendaftaranTA {
-  id                   String      @id @default(cuid())
+model Dosen {
+  idDosen              String        @id @default(cuid())
   nama                 String
-  nim                  String
-  bidangPeminatanId    String
-  judulTugasAkhir      String
-  transkripNilai       String
-  buktiLulusBahasa     String
-  buktiKRS             String
-  suratPenunjukanDosen String
-  formPermohonanIzinKuliah String
-  buktiKP              String
-  buktiMengambilMataKuliah String
-  status               Status
-  mahasiswaId          String      @unique
-  mahasiswa            mahasiswa @relation(fields: [mahasiswaId], references: [id])
-  bidang               bidang    @relation(fields: [bidangPeminatanId], references: [id])
-  adminId              String
-  admin                admin     @relation(fields: [adminId], references: [id])
+  foto                 String?
+  kuotaMhdBimbingan    Int?
+  nip                  String
+  email                String @unique
+  password             String
+  jabatanId            String
+  Token                Token[]
+  DosenPembimbing      DosenPembimbing[]
+  BidangDosen          BidangDosen[]
+  Jabatan              Jabatan @relation(fields: [jabatanId], references: [jabatanId])
 }
 
-model bidang {
-  id               String    @id @default(cuid())
-  bidang           String
-  dosen            bidangDosen[]
-  ide              ide[]
-  judul            judul[]
-  pendaftaranTA    pendaftaranTA[]
+model Jabatan {
+  jabatanId     String  @id @default(cuid())
+  namaJabatan   String
+  Dosen         Dosen[]
 }
 
-model bidangDosen {
-  bidangId         String
-  dosenId          String
-  bidang           bidang    @relation(fields: [bidangId], references: [id])
-  dosen            dosen     @relation(fields: [dosenId], references: [id])
+model Bidang {
+  bidangId      String  @id @default(cuid())
+  namaBidang    String
+  TA            TA[]
+  BidangDosen   BidangDosen[]
+}
+
+model BidangDosen {
+  bidangId      String
+  dosenId       String
+  Bidang        Bidang @relation(fields: [bidangId], references: [bidangId])
+  Dosen         Dosen @relation(fields: [dosenId], references: [idDosen])
   @@id([bidangId, dosenId])
 }
 
-model bimbinganTA {
-  id               String    @id @default(cuid())
-  dosenId          String
-  mahasiswaId      String
-  nim              String
-  judulTugasAkhir  String
-  progres          String
-  kendala          String
-  jadwalBimbingan  DateTime
-  status           Status
-  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
-  dosen            dosen     @relation(fields: [dosenId], references: [id])
+model JadwalBimbinganDosen {
+  id                String @id @default(cuid())
+  idMahasiswa       String
+  kendala           String
+  status            status
+  progresTA         String
+  tanggal           DateTime
+  dosPembimbingId   String
+  waktuMulai        DateTime
+  waktuSelesai      DateTime
+  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
+  DosenPembimbing   DosenPembimbing @relation(fields: [dosPembimbingId], references: [id])
 }
 
-model konsultasiKaprodi {
-  mahasiswaId      String
-  adminId          String
-  kendala          String
-  status           Status
-  jadwalKonsultasi DateTime
-  mahasiswa        mahasiswa @relation(fields: [mahasiswaId], references: [id])
-  admin            admin     @relation(fields: [adminId], references: [id])
-  @@id([mahasiswaId, adminId])
+model JadwalKonsulProdi {
+  id                String @id @default(cuid())
+  idMahasiswa       String
+  idAdmin           String
+  kendala           String
+  status            status
+  tanggal           DateTime
+  waktuMulai        DateTime
+  waktuSelesai      DateTime
+  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
+  Admin             Admin @relation(fields: [idAdmin], references: [adminId])
 }
 
-model notifikasi {
-  id               String    @id @default(cuid())
-  pengirimId       String
-  penerimaId       String
-  pesan            String
-  waktu            DateTime  @default(now())
+model Message {
+  messageId      String   @id @default(cuid())
+  idMahasiswa    String
+  text           String
+  isUserMessage  Boolean
+  timestamp      DateTime
+  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
 }
 
-enum Role {
-  ADMIN
-  MAHASISWA
-  DOSEN
+model Dokumen {
+  dokumenId      String  @id @default(cuid())
+  adminId        String
+  judulDokumen   String
+  urlDokumen     String
+  Admin          Admin @relation(fields: [adminId], references: [adminId])
 }
 
-enum Status {
-  DISETUJUI
-  DIPROSES
-  DITOLAK
+enum statusTa {
+  ide
+  judul
+  proposal
+}
+
+enum status {
+  diproses
+  ditolak
+  diterima
+}
+
+enum tipePembimbing {
+  utama
+  asisten
 }

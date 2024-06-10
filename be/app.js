@@ -20,6 +20,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", server.auth);
 app.use("/", server.profile);
+app.use("/", server.tugasAkhir);
+app.use("/", server.bimbinganTa);
+app.use("/", server.konsultasiKaprodi);
+
 
 app.use("/fotoUser", express.static("public/images/profile"));
 
