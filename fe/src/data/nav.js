@@ -5,19 +5,24 @@ export const datamhs = [
     icon: "LayoutDashboard",
   },
   {
-    label: "Pengajuan Ide",
-    href: "/mhs/pengajuanIde",
-    icon: "LayoutDashboard",
+    label: "Pengajuan TA",
+    href: "/mhs/pengajuanTA",
+    icon: "File",
   },
   {
-    label: "Pengajuan Ide",
-    href: "/mhs/pengajuanIde",
-    icon: "LayoutDashboard",
+    label: "Bimbingan TA",
+    href: "/mhs/bimbinganTA",
+    icon: "CalendarCheck",
   },
   {
-    label: "Pengajuan Ide",
-    href: "/mhs/pengajuanIde",
-    icon: "LayoutDashboard",
+    label: "Pendaftaran TA",
+    href: "/mhs/pendaftaranTA",
+    icon: "ClipboardCheck",
+  },
+  {
+    label: "Dokumen",
+    href: "/mhs/dokumen",
+    icon: "FileStack",
   },
 ];
 export const dataAdmin = [

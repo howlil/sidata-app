@@ -18,9 +18,7 @@ export default async function LoginAkun({ email, password }) {
     const response = await fetch(apiUrl, requestOptions);
     const data = await response.json();
     const token = data.token;
-    console.log("====================================");
     console.log(token);
-    console.log("====================================");
 
     if (token) {
       localStorage.setItem("token", token);

@@ -1,24 +1,28 @@
 const prisma = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const yup = require("yup");
 
-exports.buatAkun = async (req, res) => {
+const createAdminSchema = yup.object().shape({
+  nama: yup.string().required("Nama is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required")
+    .matches(/@admin\.id$/, "Email harus diakhiri @admin.com"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password Harus 6 karakter"),
+});
+
+
+
+exports.buatAkunAdmin = async (req, res) => {
   try {
     const { nama, email, password } = req.body;
 
-    console.log("Request body:", req.body);
-
-    if (!nama || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Isi semua Input" });
-    }
-
-    if (!email.endsWith("@admin.com")) {
-      return res
-        .status(400)
-        .json({ success: false, message: "email harus diakhiri @admin.com" });
-    }
+    await createAdminSchema.validate(req.body, { abortEarly: false });
 
     const existingUser = await prisma.admin.findUnique({ where: { email } });
     if (existingUser) {
@@ -38,9 +42,16 @@ exports.buatAkun = async (req, res) => {
     const { password: _, ...userData } = user;
     res.status(201).send({ message: "Akun Berhasil dibuat", data: userData });
   } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: error.errors,
+      });
+    }
     res
       .status(400)
-      .send({ message: "Eror saat membuat akun", error: error.message });
+      .send({ message: "Error saat membuat akun", error: error.message });
   }
 };
 
@@ -50,8 +61,8 @@ exports.login = async (req, res) => {
 
     if (!email || !password) {
       return res
-          .status(400)
-          .json({ success: false, message: "Silahkan lengkapi data akun anda" });
+        .status(400)
+        .json({ success: false, message: "Silahkan lengkapi data akun anda" });
     }
 
     const admin = await prisma.admin.findUnique({ where: { email } });
@@ -71,26 +82,26 @@ exports.login = async (req, res) => {
       userType = "mahasiswa";
     } else {
       return res
-          .status(404)
-          .json({ success: false, message: "Akun anda tidak ditemukan" });
+        .status(404)
+        .json({ success: false, message: "Akun anda tidak ditemukan" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res
-          .status(401)
-          .json({ success: false, message: "Password akun anda salah" });
+        .status(401)
+        .json({ success: false, message: "Password akun anda salah" });
     }
 
     const token = jwt.sign(
-        {
-          userId: user.id,
-          role: userType,
-        },
-        process.env.ACCESS_SECRET_KEY,
-        {
-          expiresIn: "1h",
-        }
+      {
+        userId: user.id,
+        role: userType,
+      },
+      process.env.ACCESS_SECRET_KEY,
+      {
+        expiresIn: "1h",
+      }
     );
 
     let tokenData = {
@@ -110,16 +121,15 @@ exports.login = async (req, res) => {
     });
 
     return res
-        .status(200)
-        .json({ success: true, message: "Berhasil login", token });
+      .status(200)
+      .json({ success: true, message: "Berhasil login", token });
   } catch (error) {
     console.error("Login error:", error);
     return res
-        .status(500)
-        .json({ success: false, message: "Server error: " + error.message });
+      .status(500)
+      .json({ success: false, message: "Server error: " + error.message });
   }
 };
-
 
 exports.logout = async (req, res) => {
   try {
@@ -173,7 +183,6 @@ exports.ubahPassword = async (req, res) => {
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
-      ``;
       return res
         .status(401)
         .json({ success: false, message: "Password Lama Salah" });
@@ -214,5 +223,4 @@ exports.ubahPassword = async (req, res) => {
       .json({ success: false, message: "Server error: " + error.message });
   }
 };
-
 

@@ -47,6 +47,7 @@ model TA {
 model DosenPembimbingTA {
   idTA             String
   dosenPembimbinID String
+  approved         status? 
   TA               TA @relation(fields: [idTA], references: [idTA])
   DosenPembimbing  DosenPembimbing @relation(fields: [dosenPembimbinID], references: [id])
   @@id([idTA, dosenPembimbinID])
@@ -168,7 +169,6 @@ model Dokumen {
   dokumenId      String  @id @default(cuid())
   adminId        String
   judulDokumen   String
-  urlDokumen     String
   Admin          Admin @relation(fields: [adminId], references: [adminId])
 }
 

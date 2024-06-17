@@ -1,11 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../../controllers/auth/authController");
-const auth = require("../../middlewares/auth");
+const {
+  buatAkunAdmin,
+  login,
+  logout,
+  ubahPassword,
+} = require("../../controllers/auth/authController");
+const {authenticateToken} = require("../../middlewares/auth");
+const {buatAkunMahasiswa,buatAkunDosen} = require('../../controllers/admin/kelolaAkunController')
 
-router.post("/buatAkun", authController.buatAkun);
-router.post("/login", authController.login);
-router.delete("/logout", auth.authenticateToken, authController.logout);
-router.put("/ubahPassword", auth.authenticateToken,  authController.ubahPassword);
+
+router.post("/buatAkunAdmin", buatAkunAdmin);
+router.post("/login", login);
+router.delete("/logout", authenticateToken, logout);
+router.put("/ubahPassword", authenticateToken, ubahPassword);
+router.post("/buatAkunMahasiswa",authenticateToken,authorizeRole("admin"),buatAkunMahasiswa)
+router.post("/buatAkunDosen",authenticateToken,authorizeRole("admin"),buatAkunDosen)
 
 module.exports = router;

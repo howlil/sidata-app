@@ -7,6 +7,7 @@ export default function InfoProfile() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await infoProfil();
+      console.log(result);
       setData(result.data);
     };
     fetchData();
