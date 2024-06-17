@@ -6,7 +6,7 @@ const {
   logout,
   ubahPassword,
 } = require("../../controllers/auth/authController");
-const {authenticateToken} = require("../../middlewares/auth");
+const {authenticateToken,authorizeRole} = require("../../middlewares/auth");
 const {buatAkunMahasiswa,buatAkunDosen} = require('../../controllers/admin/kelolaAkunController')
 
 

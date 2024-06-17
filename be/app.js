@@ -25,7 +25,6 @@ app.use("/", server.jabatan);
 app.use("/", server.tugasAkhir);
 app.use("/", server.bimbinganTa);
 app.use("/", server.konsultasiKaprodi);
-app.use("/", server.kelolaAkun);
 
 
 app.use("/fotoUser", express.static("public/images/profile"));
