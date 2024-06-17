@@ -6,6 +6,7 @@ const {
   editAjukanIdeTA,
   editJudulTA,
   daftarTA,
+  uploadFiles
 } = require("../../controllers/mhs/tugasAkhirController");
 const { authenticateToken, authorizeRole } = require("../../middlewares/auth");
 
@@ -37,7 +38,7 @@ router.post(
   "/daftarTA",
   authorizeRole("mahasiswa"),
   authenticateToken,
-  taController.uploadFiles,
+  uploadFiles,
   daftarTA
 );
 
