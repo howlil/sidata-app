@@ -8,8 +8,8 @@ export default async function infoProfil() {
         headers: myHeaders,
         redirect: "follow"
       };
-  
-      const response = await fetch("http://localhost:5000/infoAkun", requestOptions);
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/infoAkun`;
+      const response = await fetch(apiUrl, requestOptions);
       const result = await response.json();
       return result;
     } catch (error) {

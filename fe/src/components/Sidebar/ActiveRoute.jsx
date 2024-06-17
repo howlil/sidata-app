@@ -21,16 +21,16 @@ export default function ActiveRoute({ href, icon, label }) {
     e.preventDefault();
     navigate(href);
   };
-  const activeClass = isActive ? "bg-ijau-400  " : "";
+  const activeClass = isActive ? "bg-ijau-100 text-white " : "";
 
   return (
     <>
       <section
-        className={`${activeClass} py-3 mx-4 px-8 rounded-lg hover:bg-ijau-400 ts flex gap-x-2`}
+        className={`${activeClass} py-3 mx-4 px-8 rounded-lg hover:bg-ijau-100 ts flex gap-x-2`}
         onClick={onClick}
       >
-        <Icon name={icon} size={24} color="black" />
-        <Link className="font-semibold text-base" to={href}>
+        <Icon name={icon} size={24} color={isActive? "white":"black"} />
+        <Link className="font-normal text-base" to={href}>
           {label}
         </Link>
       </section>

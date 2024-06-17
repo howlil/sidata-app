@@ -5,7 +5,7 @@ import logo from "/public/logosidata.svg";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
-import ubahPassword from "./api/ubahPassword";
+import ubahPassword from "@/apis/api/ubahPassword";
 
 export default function UbahSandi() {
   const [email, setEmail] = useState("");
@@ -57,7 +57,7 @@ export default function UbahSandi() {
         alt="Background B"
         className="absolute w-full right-0 bottom-0"
       />
-      <section className="bg-white z-50 shadow-sm rounded-md relative w-1/3 px-8 py-10">
+      <section className="bg-white z-50 shadow-sm rounded-lg relative w-1/3 px-8 py-10">
         <div className="mb-4">
           <h3 className="mt-2 font-semibold text-xl">Ubah Sandi</h3>
           <hr className="w-1/6 border-b-4 border-ijau-100" />

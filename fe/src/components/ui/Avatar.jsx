@@ -23,16 +23,18 @@ const Avatar = ({ onClick }) => {
   return (
     <div
       onClick={onClick}
-      style={{ cursor: "pointer", display: "inline-block" }}
+      className="cursor-pointer inline-block"
     >
       {foto ? (
         <img
           src={`${import.meta.env.VITE_API_BASE_URL}/fotoUser/${foto}`}
           alt="User Avatar"
-          className="rounded-full w-10 border-2"
+          className="rounded-full w-10 "
         />
       ) : (
-        <User style={{ width: 24, height: 24 }} />
+        <div className="rounded-full bg-neutral-200 p-2">
+          <User height={24} />
+        </div>
       )}
     </div>
   );

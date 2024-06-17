@@ -8,11 +8,11 @@ exports.getUserById = async (req, res) => {
     const role = req.user.role;
 
     let user;
-    if (role === "MAHASISWA") {
+    if (role === "mahasiswa") {
       user = await prisma.mahasiswa.findUnique({ where: { id } });
-    } else if (role === "DOSEN") {
+    } else if (role === "dosen") {
       user = await prisma.dosen.findUnique({ where: { id } });
-    } else if (role === "ADMIN") {
+    } else if (role === "admin") {
       user = await prisma.admin.findUnique({ where: { id } });
     }
 
@@ -24,7 +24,7 @@ exports.getUserById = async (req, res) => {
 
     res.status(200).json({ success: true, data: user });
   } catch (error) {
-    console.error(`Error fetching ${role} data:`, error);
+    console.error(`Error fetching  data:`, error);
     res
       .status(500)
       .json({ success: false, message: "Kesalahan server: " + error.message });

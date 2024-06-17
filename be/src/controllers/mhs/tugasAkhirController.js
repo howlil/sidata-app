@@ -1,4 +1,5 @@
 const prisma = require("../../config/db");
+const {statusTA,status,tipeDosen} = require("../../config/typeEnum");
 const multer = require("multer");
 const path = require("path");
 const yup = require("yup");
@@ -16,14 +17,42 @@ const ideTASchema = yup.object().shape({
         .required("Minimal 1 dosen pembimbing harus dipilih"),
 });
 
+const editIdeTASchema = yup.object().shape({
+    idTA: yup.string().required("ID TA wajib diisi"),
+    ideTA: yup.string().required("Ide TA wajib diisi"),
+    deskrisiIde: yup.string().required("Deskripsi ide wajib diisi"),
+    bidangId: yup.string().required("Bidang ID wajib diisi"),
+    dosenPembimbinIDs: yup
+        .array()
+        .of(yup.string().required())
+        .min(1)
+        .max(2)
+        .required("Minimal 1 dosen pembimbing harus dipilih"),
+});
+
+const ajukanJudulTASchema = yup.object().shape({
+    idTA: yup.string().required("ID TA wajib diisi"),
+    judulTA: yup.string().required("Judul TA wajib diisi"),
+});
+
+const editJudulTASchema = yup.object().shape({
+    idTA: yup.string().required("ID TA wajib diisi"),
+    judulTA: yup.string().required("Judul TA wajib diisi"),
+});
+
+const daftarTASchema = yup.object().shape({
+    idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
+    idTA: yup.string().required("ID TA wajib diisi"),
+});
+
+
 exports.ajukanIdeTA = async (req, res) => {
     try {
         await ideTASchema.validate(req.body);
 
-        const {idMahasiswa, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs} =
-            req.body;
+        const { idMahasiswa, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs } = req.body;
 
-        const existingTA = await prisma.tA.findUnique({where: {idMahasiswa}});
+        const existingTA = await prisma.tA.findUnique({ where: { idMahasiswa } });
         if (existingTA) {
             return res.status(400).json({
                 success: false,
@@ -37,11 +66,12 @@ exports.ajukanIdeTA = async (req, res) => {
                 ideTA,
                 deskrisiIde,
                 bidangId,
-                statusTA: "diajukan",
-                status: "diproses",
+                statusTA: statusTA.ide,
+                status: status.diproses,
                 DosenPembimbingTA: {
                     create: dosenPembimbinIDs.map((dosenPembimbinID) => ({
                         dosenPembimbinID,
+                        approved: status.diproses,
                     })),
                 },
             },
@@ -59,42 +89,30 @@ exports.ajukanIdeTA = async (req, res) => {
         if (error instanceof yup.ValidationError) {
             return res
                 .status(400)
-                .json({success: false, message: error.errors.join(", ")});
+                .json({ success: false, message: error.errors.join(", ") });
         }
         console.error("Error submitting TA idea:", error);
         res
             .status(500)
-            .json({success: false, message: "Kesalahan server: " + error.message});
+            .json({ success: false, message: "Kesalahan server: " + error.message });
     }
 };
 
-const editIdeTASchema = yup.object().shape({
-    idTA: yup.string().required("ID TA wajib diisi"),
-    ideTA: yup.string().required("Ide TA wajib diisi"),
-    deskrisiIde: yup.string().required("Deskripsi ide wajib diisi"),
-    bidangId: yup.string().required("Bidang ID wajib diisi"),
-    dosenPembimbinIDs: yup
-        .array()
-        .of(yup.string().required())
-        .min(1)
-        .max(2)
-        .required("Minimal 1 dosen pembimbing harus dipilih"),
-});
 
 exports.editAjukanIdeTA = async (req, res) => {
     try {
         await editIdeTASchema.validate(req.body);
 
-        const {idTA, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs} = req.body;
+        const { idTA, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs } = req.body;
 
-        const existingTA = await prisma.tA.findUnique({where: {idTA}});
+        const existingTA = await prisma.tA.findUnique({ where: { idTA } });
         if (!existingTA) {
             return res
                 .status(404)
-                .json({success: false, message: "TA tidak ditemukan"});
+                .json({ success: false, message: "TA tidak ditemukan" });
         }
 
-        if (existingTA.status !== "ditolak") {
+        if (existingTA.status !== status.ditolak) {
             return res.status(400).json({
                 success: false,
                 message: "Hanya TA dengan status ditolak yang dapat diedit",
@@ -102,7 +120,7 @@ exports.editAjukanIdeTA = async (req, res) => {
         }
 
         const updatedTA = await prisma.tA.update({
-            where: {idTA},
+            where: { idTA },
             data: {
                 ideTA,
                 deskrisiIde,
@@ -111,6 +129,7 @@ exports.editAjukanIdeTA = async (req, res) => {
                     deleteMany: {},
                     create: dosenPembimbinIDs.map((dosenPembimbinID) => ({
                         dosenPembimbinID,
+                        approved: status.diproses,
                     })),
                 },
             },
@@ -128,117 +147,100 @@ exports.editAjukanIdeTA = async (req, res) => {
         if (error instanceof yup.ValidationError) {
             return res
                 .status(400)
-                .json({success: false, message: error.errors.join(", ")});
+                .json({ success: false, message: error.errors.join(", ") });
         }
         console.error("Error editing TA idea:", error);
         res
             .status(500)
-            .json({success: false, message: "Kesalahan server: " + error.message});
+            .json({ success: false, message: "Kesalahan server: " + error.message });
     }
 };
-const ajukanJudulTASchema = yup.object().shape({
-    idTA: yup.string().required("ID TA wajib diisi"),
-    judulTA: yup.string().required("Judul TA wajib diisi"),
-});
+
+
 
 exports.ajukanJudulTA = async (req, res) => {
     try {
-        await ajukanJudulTASchema.validate(req.body);
-
-        const {idTA, judulTA} = req.body;
-
-        // Cek status TA
-        const existingTA = await prisma.tA.findUnique({where: {idTA}});
-        if (!existingTA) {
-            return res
-                .status(404)
-                .json({success: false, message: "TA tidak ditemukan"});
-        }
-
-        if (existingTA.status !== "disetujui") {
-            return res.status(400).json({
-                success: false,
-                message: "Hanya TA dengan status disetujui yang dapat mengajukan judul",
-            });
-        }
-
-        const updatedTA = await prisma.tA.update({
-            where: {idTA},
-            data: {
-                judulTA,
-                status: "diproses",
-            },
+      await ajukanJudulTASchema.validate(req.body);
+  
+      const { idTA, judulTA } = req.body;
+  
+      const existingTA = await prisma.tA.findUnique({ where: { idTA } });
+      if (!existingTA) {
+        return res.status(404).json({ success: false, message: "TA tidak ditemukan" });
+      }
+  
+      if (existingTA.status !== status.diterima) {
+        return res.status(400).json({
+          success: false,
+          message: "Hanya TA dengan status diterima yang dapat mengajukan judul",
         });
-
-        res.status(200).json({
-            success: true,
-            message: "Judul TA berhasil diajukan",
-            data: updatedTA,
-        });
+      }
+  
+      const updatedTA = await prisma.tA.update({
+        where: { idTA },
+        data: {
+          judulTA,
+          status: status.diproses,
+        },
+      });
+  
+      // Reset approval status for all advisors
+      await prisma.dosenPembimbingTA.updateMany({
+        where: { idTA },
+        data: { approved: status.diproses },
+      });
+  
+      res.status(200).json({
+        success: true,
+        message: "Judul TA berhasil diajukan",
+        data: updatedTA,
+      });
     } catch (error) {
-        if (error instanceof yup.ValidationError) {
-            return res
-                .status(400)
-                .json({success: false, message: error.errors.join(", ")});
-        }
-        console.error("Error submitting TA title:", error);
-        res
-            .status(500)
-            .json({success: false, message: "Kesalahan server: " + error.message});
+      if (error instanceof yup.ValidationError) {
+        return res.status(400).json({ success: false, message: error.errors.join(", ") });
+      }
+      console.error("Error submitting TA title:", error);
+      res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
     }
-};
-
-const editJudulTASchema = yup.object().shape({
-    idTA: yup.string().required("ID TA wajib diisi"),
-    judulTA: yup.string().required("Judul TA wajib diisi"),
-});
-
-exports.editJudulTA = async (req, res) => {
+  };
+  
+  exports.editJudulTA = async (req, res) => {
     try {
-        await editJudulTASchema.validate(req.body);
-
-        const {idTA, judulTA} = req.body;
-
-        // Cek status TA
-        const existingTA = await prisma.tA.findUnique({where: {idTA}});
-        if (!existingTA) {
-            return res
-                .status(404)
-                .json({success: false, message: "TA tidak ditemukan"});
-        }
-
-        if (existingTA.status !== "ditolak") {
-            return res.status(400).json({
-                success: false,
-                message: "Hanya TA dengan status ditolak yang dapat mengubah judul",
-            });
-        }
-
-        const updatedTA = await prisma.tA.update({
-            where: {idTA},
-            data: {
-                judulTA,
-            },
+      await editJudulTASchema.validate(req.body);
+  
+      const { idTA, judulTA } = req.body;
+  
+      const existingTA = await prisma.tA.findUnique({ where: { idTA } });
+      if (!existingTA) {
+        return res.status(404).json({ success: false, message: "TA tidak ditemukan" });
+      }
+  
+      if (existingTA.status !== status.ditolak) {
+        return res.status(400).json({
+          success: false,
+          message: "Hanya TA dengan status ditolak yang dapat mengubah judul",
         });
-
-        res.status(200).json({
-            success: true,
-            message: "Judul TA berhasil diedit",
-            data: updatedTA,
-        });
+      }
+  
+      const updatedTA = await prisma.tA.update({
+        where: { idTA },
+        data: { judulTA, status: status.diproses },
+      });
+  
+      res.status(200).json({
+        success: true,
+        message: "Judul TA berhasil diedit",
+        data: updatedTA,
+      });
     } catch (error) {
-        if (error instanceof yup.ValidationError) {
-            return res
-                .status(400)
-                .json({success: false, message: error.errors.join(", ")});
-        }
-        console.error("Error editing TA title:", error);
-        res
-            .status(500)
-            .json({success: false, message: "Kesalahan server: " + error.message});
+      if (error instanceof yup.ValidationError) {
+        return res.status(400).json({ success: false, message: error.errors.join(", ") });
+      }
+      console.error("Error editing TA title:", error);
+      res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
     }
-};
-
+  };
+  
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, "../../../public/images/filepdf"));
@@ -274,10 +276,6 @@ const upload = multer({
 
 exports.uploadFiles = upload;
 
-const daftarTASchema = yup.object().shape({
-    idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
-    idTA: yup.string().required("ID TA wajib diisi"),
-});
 
 exports.daftarTA = async (req, res) => {
     uploadFiles(req, res, async function (err) {
@@ -316,7 +314,7 @@ exports.daftarTA = async (req, res) => {
                     suratTugas: files.suratTugas[0].path,
                     suratIzinKuliah: files.suratIzinKuliah[0].path,
                     buktiKP: files.buktiKP[0].path,
-                    status: "diproses",
+                    status: status.diproses,
                 },
             });
 

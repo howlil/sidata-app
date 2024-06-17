@@ -13,10 +13,14 @@ import NotFound from "./NotFound";
 import { ActiveRouteProvider } from "./utils/ActiveRouteContex";
 import { ProtectRoute, withRole } from "./utils/ProtectRoute";
 import InfoProfile from "./components/section/InfoProfile";
+import PendaftaranTA from "./app/mahasiswa/pendaftaranTA";
+import PengajuanTA from "./app/mahasiswa/pengajuanTA";
+import Dokumen from "./app/mahasiswa/Dokumen";
+import BimbingaTA from "./app/mahasiswa/bimbinganTA";
 
 export default function App() {
-  const ProtectedMhsDashboard = withRole(DashboardMhs, ["MAHASISWA"]);
-  const ProtectedAdminDashboard = withRole(DashboardAdmin, ["ADMIN"]);
+  const ProtectedMhsDashboard = withRole(DashboardMhs, ["mahasiswa"]);
+  const ProtectedAdminDashboard = withRole(DashboardAdmin, ["admin"]);
 
   return (
     <>
@@ -41,14 +45,20 @@ export default function App() {
             } />
 
             {/* mahasiswa */}
-            <Route
+            {/* <Route
               path="/mhs/dashboard"
               element={
                 <ProtectRoute>
                   <ProtectedMhsDashboard />
                 </ProtectRoute>
               }
-            />
+            /> */}
+            <Route path="/mhs/dashboard" element={<DashboardMhs />} />
+            <Route path="/mhs/pendaftaranTA" element={<PendaftaranTA />} />
+            <Route path="/mhs/pengajuanTA" element={<PengajuanTA />} />
+            <Route path="/mhs/dokumen" element={<Dokumen />} />
+            <Route path="/mhs/bimbinganTA" element={<BimbingaTA />} />
+            
             {/* Admin */}
             <Route
               path="/admin/dashboard"

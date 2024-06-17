@@ -64,3 +64,35 @@ exports.getAllJadwalKonsulProdi = async (req, res) => {
         res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
     }
 };
+
+exports.getRiwayatKonsulProdi = async (req, res) => {
+    const { idMahasiswa } = req.params;
+
+    try {
+        const riwayatKonsulProdi = await prisma.jadwalKonsulProdi.findMany({
+            where: {
+                idMahasiswa,
+                status: 'ditolak'
+            },
+            include: {
+                Mahasiswa: true,
+                Admin: true
+            }
+        });
+
+        if (riwayatKonsulProdi.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Tidak ada riwayat konsultasi ditolak untuk mahasiswa ini"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: riwayatKonsulProdi
+        });
+    } catch (error) {
+        console.error("Error retrieving consultation history:", error);
+        res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
+    }
+};

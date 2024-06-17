@@ -20,17 +20,17 @@ export default function SidebarNav() {
   const role = getRoleFromToken();
 
   let navData;
-  if (role === "DOSEN") {
+  if (role === "dosen") {
     navData = dataDosen;
-  } else if (role === "ADMIN") {
+  } else if (role === "admin") {
     navData = dataAdmin;
-  }else if (role === "MAHASISWA") {   
+  }else if (role === "mahasiswa") {   
     navData = datamhs;
   }
 
   return (
     <>
-      {navData.map((data, i) => (
+      {navData?.map((data, i) => (
         <section key={i}>
           <ActiveRoute href={data.href} icon={data.icon} label={data.label} />
         </section>

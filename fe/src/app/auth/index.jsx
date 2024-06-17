@@ -1,7 +1,6 @@
 import Login from "./login";
 import img from "/public/ilustrasi.svg";
 import Logo from "/public/logosidata.svg";
-import Daftar from "./daftar";
 import { useLocation } from "react-router-dom";
 
 export default function Auth() {
@@ -36,7 +35,7 @@ export default function Auth() {
           <hr className="w-1/6 border-b-4 border-ijau-100" />
         </section>
         <section className="mt-4">
-          {isLoginPage ? <Login /> : <Daftar />}
+          <Login />
         </section>
       </div>
     </div>
