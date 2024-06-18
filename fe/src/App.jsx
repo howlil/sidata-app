@@ -80,6 +80,8 @@ export default function App() {
              <Route path="/admin/data/dataDosen" element={<DataDosen />} />
              <Route path="/admin/data/dataDosen/tambahAkun" element={<KelolaAkunDosen />} />
              <Route path="/admin/data/dataMhs/tambahAkun" element={<KelolaAkunMhs />} />
+             <Route path="/admin/data/dataMhs/editAkun/:id" element={<KelolaAkunMhs />} />
+             <Route path="/admin/data/dataDosen/editAkun/:id" element={<KelolaAkunDosen />} />
 
             {/* Dosen */}
             {/* Tambahkan rute dosen di sini jika diperlukan */}

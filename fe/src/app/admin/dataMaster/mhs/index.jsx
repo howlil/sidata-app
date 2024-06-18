@@ -9,36 +9,39 @@ export default function DataMhs() {
     const navigate = useNavigate();
     const [data, setData] = useState([]);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const result = await getAllAkunMhs();
-                setData(result.data);
-                console.log(result)
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+    async function fetchData() {
+        try {
+            const result = await getAllAkunMhs();
+            setData(result.data);
+            console.log(result.data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
+    
+    useEffect(() => {
         fetchData();
     }, []);
+    const handleEdit = (id) => {
+        console.log(id)
+        navigate(`/admin/data/dataMhs/editAkun/${id.idMahasiswa}`);
+    };
 
     const columns = [
+
         {
-            Header: "No",
-            accessor: "no",
-        },
-        {
-            Header: "Nama",
+            header: "Nama",
             accessor: "nama",
         },
         {
-            Header: "NIM",
+            header: "NIM",
             accessor: "nim", 
         },
         {
-            Header: "Action",
-            accessor: "action",
+            header: "Email",
+            accessor: "email", 
         },
+
     ];
 
     return (
@@ -48,7 +51,7 @@ export default function DataMhs() {
                 <Button onClick={() => navigate('/admin/data/dataMhs/tambahAkun')}>Tambah Data</Button>
             </section>
             <section className="mt-8">
-                <Tables columns={columns} data={data} />
+                <Tables columns={columns} data={data} del="hidden" onEdit={(row)=>handleEdit(row)} />
             </section>
         </Layout>
     );
