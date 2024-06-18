@@ -4,7 +4,7 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import { jwtDecode } from 'jwt-decode'
-import LoginAkun from "@/apis/api/loginAkun";
+import LoginAkun from "@/apis/auth/loginAkun";
 
 export default function Login() {
   const [form, setForm] = useState({

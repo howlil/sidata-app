@@ -143,3 +143,98 @@ export const buatAkunDosen = async (req, res) => {
       .send({ message: "Error saat membuat akun", error: error.message });
   }
 };
+
+
+export const getAllAkunMhs = async(req,res)=>{
+  try {
+    const data = prisma.mahasiswa.findMany()
+    if(data.length ===0) res.status(400).json({message:"tidak ada data"})
+
+    res.status(200).json({message:"data berhasil diambil",data:data})
+
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: error.errors,
+      });
+    }
+    res
+      .status(400)
+      .send({ message: "Error saat membuat akun", error: error.message });
+  }  
+}
+
+export const akunMhsById = async(req,res)=>{
+ try {
+  const {id}=req.params
+  const data = prisma.mahasiswa.findUnique({
+    where :{
+      idMahasiswa : id,
+    }
+  })
+  if(!data) res.status(400).json({message:"akun tidak ditemukan"})
+
+    res.status(200).json({message:"akun ditemukna",data:data})
+ } catch (error) {
+  if (error instanceof yup.ValidationError) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation error",
+      errors: error.errors,
+    });
+  }
+  res
+    .status(400)
+    .send({ message: "Error saat membuat akun", error: error.message });
+ }
+}
+
+export const akunDosenById = async(req,res)=>{
+ try {
+  const {id}=req.params
+  const data = prisma.dosen.findUnique({
+    where :{
+      idDosen : id,
+    }
+  })
+  if(!data) res.status(400).json({message:"akun tidak ditemukan"})
+
+    res.status(200).json({message:"akun ditemukna",data:data})
+ } catch (error) {
+  if (error instanceof yup.ValidationError) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation error",
+      errors: error.errors,
+    });
+  }
+  res
+    .status(400)
+    .send({ message: "Error saat membuat akun", error: error.message });
+ }
+}
+
+
+
+export const getAllAkunDosen = async(req,res)=>{
+  try {
+    const data = prisma.dosen.findMany()
+    if(data.length ===0) res.status(400).json({message:"tidak ada data"})
+
+    res.status(200).json({message:"data berhasil diambil",data:data})
+
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: error.errors,
+      });
+    }
+    res
+      .status(400)
+      .send({ message: "Error saat membuat akun", error: error.message });
+  }  
+}
