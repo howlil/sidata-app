@@ -1,4 +1,4 @@
-const InputCheckList = ({ label, items, onSelect }) => {
+const InputCheckList = ({ label, items, selectedItems, onSelect }) => {
   return (
     <section>
       <label className="mb-1 text-md font-medium text-gray-700">
@@ -9,6 +9,7 @@ const InputCheckList = ({ label, items, onSelect }) => {
           <input
             type="checkbox"
             className="mr-2"
+          checked={selectedItems?.includes(item.value)}
             onChange={() => onSelect(item)}
           />
           <span>{item.name}</span>

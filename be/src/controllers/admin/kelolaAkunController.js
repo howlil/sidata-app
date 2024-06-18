@@ -31,14 +31,14 @@ const createDosenSchema = yup.object().shape({
     .min(6, "Password Harus 6 karakter"),
   jabatanId: yup.string().required("Jabatan is required"),
   bidangDosen: yup
-  .array()
-  .of(
-    yup.object().shape({
-      bidangId: yup.string().required("Bidang ID is required")
-    })
-  )
-  .min(1, "Minimal satu bidang dosen")
-  .max(3, "Maksimal tiga bidang dosen"),
+    .array()
+    .of(
+      yup.object().shape({
+        bidangId: yup.string().required("Bidang ID is required"),
+      })
+    )
+    .min(1, "Minimal satu bidang dosen")
+    .max(3, "Maksimal tiga bidang dosen"),
 });
 export const buatAkunMahasiswa = async (req, res) => {
   try {
@@ -75,7 +75,11 @@ export const buatAkunMahasiswa = async (req, res) => {
 
     res
       .status(201)
-      .json({ success: true, message: "Akun Mahasiswa Berhasil dibuat", data: mahasiswaData });
+      .json({
+        success: true,
+        message: "Akun Mahasiswa Berhasil dibuat",
+        data: mahasiswaData,
+      });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({
@@ -90,7 +94,6 @@ export const buatAkunMahasiswa = async (req, res) => {
   }
 };
 
-
 export const buatAkunDosen = async (req, res) => {
   try {
     const { nama, nip, email, password, jabatanId, bidangDosen } = req.body;
@@ -99,10 +102,7 @@ export const buatAkunDosen = async (req, res) => {
 
     const existingDosen = await prisma.dosen.findFirst({
       where: {
-        OR: [
-          { email },
-          { nip },
-        ],
+        OR: [{ email }, { nip }],
       },
     });
 
@@ -124,7 +124,7 @@ export const buatAkunDosen = async (req, res) => {
         jabatanId,
         BidangDosen: {
           create: bidangDosen.map(({ bidangId }) => ({
-            bidangId
+            bidangId,
           })),
         },
       },
@@ -135,7 +135,13 @@ export const buatAkunDosen = async (req, res) => {
 
     const { password: _, ...dosenData } = dosen;
 
-    res.status(201).json({ message: "Akun Dosen Berhasil dibuat", data: dosenData });
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Akun Dosen Berhasil dibuat",
+        data: dosenData,
+      });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({
@@ -146,18 +152,89 @@ export const buatAkunDosen = async (req, res) => {
     }
     res
       .status(400)
-      .json({ message: "Error saat membuat akun", error: error.message });
+      .json({
+        success: false,
+        message: "Error saat membuat akun",
+        error: error.message,
+      });
   }
 };
 
-
-export const getAllAkunMhs = async(req,res)=>{
+export const getAllAkunMhs = async (req, res) => {
   try {
-    const data = await prisma.mahasiswa.findMany()
-    if(data.length ===0) res.status(400).json({message:"tidak ada data"})
-      console.log(data)
-    res.status(200).json({message:"data berhasil diambil",data:data})
+    const data = await prisma.mahasiswa.findMany();
+    if (data.length === 0) res.status(400).json({ message: "tidak ada data" });
+    console.log(data);
+    res
+      .status(200)
+      .json({ success: true, message: "data berhasil diambil", data: data });
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: error.errors,
+      });
+    }
+    res
+      .status(400)
+      .send({
+        success: false,
+        message: "Error saat membuat akun",
+        error: error.message,
+      });
+  }
+};
 
+export const akunMhsById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await prisma.mahasiswa.findUnique({
+      where: {
+        idMahasiswa: id,
+      },
+    });
+    if (!data)
+      res.status(400).json({ success: true, message: "akun tidak ditemukan" });
+
+    res
+      .status(200)
+      .json({ success: true, message: "akun ditemukna", data: data });
+  } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: error.errors,
+      });
+    }
+    res
+      .status(400)
+      .json({
+        success: false,
+        message: "Error saat membuat akun",
+        error: error.message,
+      });
+  }
+};
+
+export const akunDosenById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await prisma.dosen.findUnique({
+      where: {
+        idDosen: id,
+      },
+      include: {
+        BidangDosen: true,
+      }
+    });
+    if (!data)
+      res.status(400).json({ success: false, message: "akun tidak ditemukan" });
+
+    res
+      .status(200)
+      .json({ success: true, message: "akun ditemukna", data: data });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({
@@ -169,67 +246,19 @@ export const getAllAkunMhs = async(req,res)=>{
     res
       .status(400)
       .send({ message: "Error saat membuat akun", error: error.message });
-  }  
-}
-
-export const akunMhsById = async(req,res)=>{
- try {
-  const {id}=req.params
-  const data = await prisma.mahasiswa.findUnique({
-    where :{
-      idMahasiswa : id,
-    }
-  })
-  if(!data) res.status(400).json({message:"akun tidak ditemukan"})
-
-    res.status(200).json({success:true,message:"akun ditemukna",data:data})
- } catch (error) {
-  if (error instanceof yup.ValidationError) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation error",
-      errors: error.errors,
-    });
   }
-  res
-    .status(400)
-    .send({ message: "Error saat membuat akun", error: error.message });
- }
-}
+};
 
-export const akunDosenById = async(req,res)=>{
- try {
-  const {id}=req.params
-  const data = await prisma.dosen.findUnique({
-    where :{
-      idDosen : id,
-    }
-  })
-  if(!data) res.status(400).json({message:"akun tidak ditemukan"})
-
-    res.status(200).json({message:"akun ditemukna",data:data})
- } catch (error) {
-  if (error instanceof yup.ValidationError) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation error",
-      errors: error.errors,
-    });
-  }
-  res
-    .status(400)
-    .send({ message: "Error saat membuat akun", error: error.message });
- }
-}
-
-
-export const getAllAkunDosen = async(req,res)=>{
+export const getAllAkunDosen = async (req, res) => {
   try {
-    const data = await prisma.dosen.findMany()
-    if(data.length ===0) res.status(400).json({message:"tidak ada data"})
+    const data = await prisma.dosen.findMany();
+    console.log(data);
 
-    res.status(200).json({message:"data berhasil diambil",data:data})
+    if (data.length === 0) {
+      return res.status(400).json({ success: false, message: "tidak ada data" });
+    }
 
+    res.status(200).json({ success: true, message: "data berhasil diambil", data: data });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({
@@ -238,26 +267,18 @@ export const getAllAkunDosen = async(req,res)=>{
         errors: error.errors,
       });
     }
-    res
-      .status(400)
-      .send({ message: "Error saat membuat akun", error: error.message });
-  }  
-}
-
-
-
-const editMahasiswaSchema = yup.object().shape({
-  nama: yup.string().required("Nama is required"),
-  nim: yup.string().required("NIM is required"),
+    return res.status(500).send({ message: "Error saat membuat akun", error: error.message }); 
+  }
+};
+const editMahasiswaSchemaOptional = yup.object().shape({
+  nama: yup.string().optional(),
+  nim: yup.string().optional(),
   email: yup
     .string()
     .email("Invalid email format")
-    .required("Email is required")
+    .optional()
     .matches(/@student\.id$/, "Email harus diakhiri @student.id"),
-  password: yup
-    .string()
-    .min(6, "Password Harus 6 karakter"),
-  alamat: yup.string().required("Alamat is required"),
+  alamat: yup.string().optional(),
 });
 
 export const editAkunMahasiswa = async (req, res) => {
@@ -298,7 +319,7 @@ export const editAkunMahasiswa = async (req, res) => {
     const { password: _, ...mahasiswaData } = updatedMahasiswa;
 
     res.status(200).json({
-      success:true,
+      success: true,
       message: "Akun mahasiswa berhasil diperbarui",
       data: mahasiswaData,
     });
@@ -317,19 +338,15 @@ export const editAkunMahasiswa = async (req, res) => {
   }
 };
 
-
 const editDosenSchema = yup.object().shape({
-  nama: yup.string().required("Nama is required"),
-  nip: yup.string().required("NIP is required"),
+  nama: yup.string().optional(),
+  nip: yup.string().optional(),
   email: yup
     .string()
     .email("Invalid email format")
-    .required("Email is required")
+    .optional()
     .matches(/@dosen\.id$/, "Email harus diakhiri @dosen.id"),
-  password: yup
-    .string()
-    .min(6, "Password Harus 6 karakter"),
-  jabatanId: yup.string().required("Jabatan is required"),
+  jabatanId: yup.string().optional(),
   bidangDosen: yup
     .array()
     .of(yup.string().required("Bidang Dosen is required"))
@@ -340,7 +357,7 @@ const editDosenSchema = yup.object().shape({
 export const editAkunDosen = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nama, nip, email, password, jabatanId, bidangDosen } = req.body;
+    const { nama, nip, email, password, jabatanId, BidangDosen } = req.body;
 
     await editDosenSchema.validate(req.body, { abortEarly: false });
 
@@ -359,8 +376,16 @@ export const editAkunDosen = async (req, res) => {
       nama,
       nip,
       email,
+      password,
       jabatanId,
     };
+    
+    if (!Array.isArray(BidangDosen)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input for bidangDosen, expected an array",
+      });
+    }
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -372,8 +397,10 @@ export const editAkunDosen = async (req, res) => {
       data: {
         ...updateData,
         BidangDosen: {
-          deleteMany: {}, // Hapus bidang dosen yang ada
-          create: bidangDosen.map((bidang) => ({ bidang })), // Tambahkan bidang dosen baru
+          deleteMany: {},
+          create: BidangDosen.map(({ bidangId }) => ({
+            bidangId,
+          })),
         },
       },
       include: {
@@ -384,6 +411,7 @@ export const editAkunDosen = async (req, res) => {
     const { password: _, ...dosenData } = updatedDosen;
 
     res.status(200).send({
+      success: true,
       message: "Akun dosen berhasil diperbarui",
       data: dosenData,
     });

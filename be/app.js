@@ -22,12 +22,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 var app = express();
+
 const corsOptions = {
+  origin: 'http://localhost:5173', // Ganti dengan URL frontend Anda
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
-  origin: ['https://orange-spoon-wrprgwvrgqh9jg6-5173.app.github.dev', 'https://orange-spoon-wrprgwvrgqh9jg6-5173.app.github.dev'] 
+  optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions));
-app.use(logger("dev"));
+
+app.use(cors(corsOptions));app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());

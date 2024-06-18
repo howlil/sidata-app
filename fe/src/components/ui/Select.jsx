@@ -9,7 +9,7 @@ const Select = ({ label, options, onChange, value }) => {
       <select
         value={value}
         onChange={onChange}
-        className="px-3 py-2 text-gray-700 border-neutral-400 rounded-lg border"
+        className="px-3 py-2 text-gray-700 border-neutral-600 rounded-lg border"
       >
         <option value="">Select</option>
         {options?.map((option, index) => (
