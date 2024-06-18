@@ -3,7 +3,7 @@ import TextArea from "@/components/ui/TextArea";
 import Select from "@/components/ui/Select";
 import { Link } from "react-router-dom";
 import Button from "@/components/ui/Button";
-import InputCheck from "@/components/ui/InputCheck";
+import InputCheck from "@/components/ui/InputCheckList";
 
 export default function PengajuanTA() {
   return (
