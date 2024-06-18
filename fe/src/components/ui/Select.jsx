@@ -3,7 +3,7 @@ const Select = ({ label, options, onChange }) => {
     return (
       <div className="flex flex-col">
         {label && (
-          <label className="mb-1 text-md font-semibold text-gray-700">
+          <label className="mb-1 text-md font-medium text-gray-700">
             {label}
           </label>
         )}
