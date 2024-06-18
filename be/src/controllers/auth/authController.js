@@ -100,7 +100,7 @@ export const login = async (req, res) => {
       },
       process.env.ACCESS_SECRET_KEY,
       {
-        expiresIn: "1h",
+        expiresIn: "1w",
       }
     );
 

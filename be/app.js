@@ -22,8 +22,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 var app = express();
-
-app.use(cors());
+const corsOptions = {
+  credentials: true,
+  origin: ['https://orange-spoon-wrprgwvrgqh9jg6-5173.app.github.dev', 'https://orange-spoon-wrprgwvrgqh9jg6-5173.app.github.dev'] 
+};
+app.use(cors(corsOptions));
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
