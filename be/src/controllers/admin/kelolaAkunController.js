@@ -1,6 +1,6 @@
-const prisma = require("../../config/db");
-const bcrypt = require("bcrypt");
-const yup = require("yup");
+import prisma from "../../config/db.js";
+import bcrypt from "bcrypt";
+import * as yup from "yup";
 
 const createMahasiswaSchema = yup.object().shape({
   nama: yup.string().required("Nama is required"),
@@ -36,7 +36,7 @@ const createDosenSchema = yup.object().shape({
     .min(1, "Minimal satu bidang dosen")
     .max(3, "Maksimal tiga bidang dosen"),
 });
-exports.buatAkunMahasiswa = async (req, res) => {
+export const buatAkunMahasiswa = async (req, res) => {
   try {
     const { nama, nim, email, password, alamat } = req.body;
 
@@ -87,7 +87,7 @@ exports.buatAkunMahasiswa = async (req, res) => {
 };
 
 
-exports.buatAkunDosen = async (req, res) => {
+export const buatAkunDosen = async (req, res) => {
   try {
     const { nama, nip, email, password, jabatanId, bidangDosen } = req.body;
 

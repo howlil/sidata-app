@@ -1,7 +1,7 @@
-const prisma = require("../../config/db");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const yup = require("yup");
+import prisma from "../../config/db.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import * as yup from "yup";
 
 const createAdminSchema = yup.object().shape({
   nama: yup.string().required("Nama is required"),
@@ -18,7 +18,7 @@ const createAdminSchema = yup.object().shape({
 
 
 
-exports.buatAkunAdmin = async (req, res) => {
+export const buatAkunAdmin = async (req, res) => {
   try {
     const { nama, email, password } = req.body;
 
@@ -55,7 +55,7 @@ exports.buatAkunAdmin = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -131,7 +131,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     const tokenId = req.tokenId;
 
@@ -150,7 +150,7 @@ exports.logout = async (req, res) => {
   }
 };
 
-exports.ubahPassword = async (req, res) => {
+export const ubahPassword = async (req, res) => {
   const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
 
   if (!email || !oldPassword || !newPassword || !confirmNewPassword) {

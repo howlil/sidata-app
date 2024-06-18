@@ -1,13 +1,13 @@
-const prisma = require("../../config/db");
-const { status, statusTA } = require("../../config/typeEnum");
-const yup = require("yup");
+import prisma from ("../../config/db");
+import { status, statusTA } from ("../../config/typeEnum");
+import * as yup from ("yup");
 
 const accDaftarTASchema = yup.object().shape({
     idDaftarTA: yup.string().required("ID Daftar TA wajib diisi"),
     isApproved: yup.boolean().required("Status persetujuan wajib diisi"),
 });
 
-exports.accDaftarTA = async (req, res) => {
+export const accDaftarTA = async (req, res) => {
     try {
         await accDaftarTASchema.validate(req.body);
 

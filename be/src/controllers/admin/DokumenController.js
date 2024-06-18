@@ -1,12 +1,12 @@
-const yup = require("yup");
-const prisma = require("../../config/db");
+import * as yup from "yup";
+import prisma from "../../config/db.js";
 
 const dokumenSchema = yup.object().shape({
   adminId: yup.string().required("Admin ID is required"),
   judulDokumen: yup.string().required("Judul Dokumen is required"),
 });
 
-exports.createDokumen = async (req, res) => {
+export const createDokumen = async (req, res) => {
   try {
     const { adminId, judulDokumen } = req.body;
 
@@ -32,7 +32,7 @@ exports.createDokumen = async (req, res) => {
   }
 };
 
-exports.getAllDokumen = async (req, res) => {
+export const getAllDokumen = async (req, res) => {
   try {
     const dokumen = await prisma.dokumen.findMany();
     res.status(200).json({ success: true, data: dokumen });
@@ -41,7 +41,7 @@ exports.getAllDokumen = async (req, res) => {
   }
 };
 
-exports.getDokumenById = async (req, res) => {
+export const getDokumenById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -50,7 +50,9 @@ exports.getDokumenById = async (req, res) => {
     });
 
     if (!dokumen) {
-      return res.status(404).json({ success: false, message: "Dokumen not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Dokumen not found" });
     }
 
     res.status(200).json({ success: true, data: dokumen });
@@ -59,8 +61,7 @@ exports.getDokumenById = async (req, res) => {
   }
 };
 
-
-exports.updateDokumen = async (req, res) => {
+export const updateDokumen = async (req, res) => {
   try {
     const { id } = req.params;
     const { adminId, judulDokumen } = req.body;
@@ -85,8 +86,7 @@ exports.updateDokumen = async (req, res) => {
   }
 };
 
-
-exports.deleteDokumen = async (req, res) => {
+export const deleteDokumen = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -94,7 +94,9 @@ exports.deleteDokumen = async (req, res) => {
       where: { dokumenId: id },
     });
 
-    res.status(200).json({ success: true, message: "Dokumen deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Dokumen deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

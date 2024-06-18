@@ -1,13 +1,11 @@
-const yup = require("yup");
-const prisma = require("../../config/db");
+import * as yup from "yup";
+import prisma from "../../config/db.js";
 
 const bidangSchema = yup.object().shape({
   namaBidang: yup.string().required("Nama Bidang is required"),
 });
 
-
-
-exports.createBidang = async (req, res) => {
+export const createBidang = async (req, res) => {
   try {
     const { namaBidang } = req.body;
 
@@ -32,7 +30,7 @@ exports.createBidang = async (req, res) => {
   }
 };
 
-exports.getAllBidang = async (req, res) => {
+export const getAllBidang = async (req, res) => {
   try {
     const bidang = await prisma.bidang.findMany();
     res.status(200).json({ success: true, data: bidang });
@@ -41,7 +39,7 @@ exports.getAllBidang = async (req, res) => {
   }
 };
 
-exports.getBidangById = async (req, res) => {
+export const getBidangById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -50,7 +48,9 @@ exports.getBidangById = async (req, res) => {
     });
 
     if (!bidang) {
-      return res.status(404).json({ success: false, message: "Bidang not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Bidang not found" });
     }
 
     res.status(200).json({ success: true, data: bidang });
@@ -59,7 +59,7 @@ exports.getBidangById = async (req, res) => {
   }
 };
 
-exports.updateBidang = async (req, res) => {
+export const updateBidang = async (req, res) => {
   try {
     const { id } = req.params;
     const { namaBidang } = req.body;
@@ -84,7 +84,7 @@ exports.updateBidang = async (req, res) => {
   }
 };
 
-exports.deleteBidang = async (req, res) => {
+export const deleteBidang = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -92,7 +92,9 @@ exports.deleteBidang = async (req, res) => {
       where: { bidangId: id },
     });
 
-    res.status(200).json({ success: true, message: "Bidang deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Bidang deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

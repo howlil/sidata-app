@@ -1,14 +1,14 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+import {
   ajukanIdeTA,
   ajukanJudulTA,
   editAjukanIdeTA,
   editJudulTA,
   daftarTA,
   uploadFiles
-} = require("../../controllers/mhs/tugasAkhirController");
-const { authenticateToken, authorizeRole } = require("../../middlewares/auth");
+} from "../../controllers/mhs/tugasAkhirController.js";
+import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post(
   "/ajukanIdeTA",
@@ -42,5 +42,4 @@ router.post(
   daftarTA
 );
 
-
-module.exports = router;
+export default router;
