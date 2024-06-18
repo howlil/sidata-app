@@ -20,6 +20,7 @@ export const vectorizePdf = async (req, res) => {
             metadata: {
                 fileId: newFileId,
                 pageNumber: index + 1,
+                text : page,
             },
         }));
 
@@ -48,7 +49,7 @@ export const vectorizePdf = async (req, res) => {
             metadata: document.metadata,
         }));
 
-        // await pineconeIndex.upsert(upserts);
+        await pineconeIndex.upsert(upserts);
 
         res.status(200).json({ message: 'PDF berhasil diverktorisasi dan disimpan di Pinecone' });
     } catch (error) {
