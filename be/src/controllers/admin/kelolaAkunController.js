@@ -270,7 +270,7 @@ export const getAllAkunDosen = async (req, res) => {
     return res.status(500).send({ message: "Error saat membuat akun", error: error.message }); 
   }
 };
-const editMahasiswaSchemaOptional = yup.object().shape({
+const editMahasiswaSchema = yup.object().shape({
   nama: yup.string().optional(),
   nim: yup.string().optional(),
   email: yup
@@ -280,6 +280,7 @@ const editMahasiswaSchemaOptional = yup.object().shape({
     .matches(/@student\.id$/, "Email harus diakhiri @student.id"),
   alamat: yup.string().optional(),
 });
+
 
 export const editAkunMahasiswa = async (req, res) => {
   try {
@@ -296,6 +297,22 @@ export const editAkunMahasiswa = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Akun mahasiswa tidak ditemukan",
+      });
+    }
+
+    const duplicateCheck = await prisma.mahasiswa.findFirst({
+      where: {
+        OR: [
+          { nim, NOT: { idMahasiswa: id } },
+          { email, NOT: { idMahasiswa: id } }
+        ],
+      },
+    });
+
+    if (duplicateCheck) {
+      return res.status(400).json({
+        success: false,
+        message: "NIM atau Email sudah digunakan oleh akun lain.",
       });
     }
 
@@ -369,6 +386,22 @@ export const editAkunDosen = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Akun dosen tidak ditemukan",
+      });
+    }
+    const conflictingDosen = await prisma.dosen.findFirst({
+      where: {
+        OR: [
+          { nip, NOT: { idDosen: id } },
+          { email, NOT: { idDosen: id } }
+        ],
+      },
+    });
+    
+    if (conflictingDosen) {
+      const conflictField = conflictingDosen.nip === nip ? 'NIP' : 'email';
+      return res.status(400).json({
+        success: false,
+        message: `${conflictField} sudah digunakan.`,
       });
     }
 
