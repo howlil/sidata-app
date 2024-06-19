@@ -7,15 +7,20 @@ import * as yup from "yup";
 const ideTASchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   ideTA: yup.string().required("Ide TA wajib diisi"),
-  deskrisiIde: yup.string().required("Deskripsi ide wajib diisi"),
+  deskripsiIde: yup.string().required("Deskripsi ide wajib diisi"),
   bidangId: yup.string().required("Bidang ID wajib diisi"),
-  dosenPembimbinIDs: yup
+  dosenPembimbingIDs: yup
     .array()
-    .of(yup.string().required())
-    .min(1)
-    .max(2)
+    .of(
+      yup.object().shape({
+        dosenPembimbingID: yup.string().required("ID dosen pembimbing wajib diisi"),
+      })
+    )
+    .min(1, "Minimal 1 dosen pembimbing harus dipilih")
+    .max(2, "Maksimal 2 dosen pembimbing dapat dipilih")
     .required("Minimal 1 dosen pembimbing harus dipilih"),
 });
+
 
 const editIdeTASchema = yup.object().shape({
   idTA: yup.string().required("ID TA wajib diisi"),
@@ -49,28 +54,44 @@ export const ajukanIdeTA = async (req, res) => {
   try {
     await ideTASchema.validate(req.body);
 
-    const { idMahasiswa, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs } =
-      req.body;
+    const { idMahasiswa, ideTA, deskripsiIde, bidangId, dosenPembimbingIDs } = req.body;
 
+    
     const existingTA = await prisma.tA.findUnique({ where: { idMahasiswa } });
     if (existingTA) {
       return res.status(400).json({
         success: false,
         message: "Mahasiswa sudah mengajukan ide TA sebelumnya",
       });
-    }
+    }  
+      const dosenPembimbingIDList = dosenPembimbingIDs.map((item) => item.dosenPembimbingID);
+      const validDosenPembimbing = await prisma.dosenPembimbing.findMany({
+        where: {
+          id: { in: dosenPembimbingIDList }
+        },
+        select: {
+          id: true
+        }
+      });
+  
+      if (validDosenPembimbing.length !== dosenPembimbingIDList.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Satu atau lebih ID dosen pembimbing tidak valid",
+        });
+      }
 
     const newTA = await prisma.tA.create({
       data: {
         idMahasiswa,
         ideTA,
-        deskrisiIde,
+        deskripsiIde, 
         bidangId,
-        statusTA: statusTA.ide,
+        statusTA: statusTA.belumAda,
         status: status.diproses,
         DosenPembimbingTA: {
-          create: dosenPembimbinIDs.map((dosenPembimbinID) => ({
-            dosenPembimbinID,
+          create: dosenPembimbingIDs.map((dosenId) => ({
+            dosenPembimbingID: dosenId,
             approved: status.diproses,
           })),
         },
@@ -87,16 +108,14 @@ export const ajukanIdeTA = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
-      return res
-        .status(400)
-        .json({ success: false, message: error.errors.join(", ") });
+      return res.status(400).json({ success: false, message: error.errors.join(", ") });
     }
     console.error("Error submitting TA idea:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Kesalahan server: " + error.message });
+    res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
+
 
 export const editAjukanIdeTA = async (req, res) => {
   try {
@@ -345,3 +364,4 @@ export const daftarTA = async (req, res) => {
     }
   });
 };
+

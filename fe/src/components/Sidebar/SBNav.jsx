@@ -1,26 +1,14 @@
 import { useState } from "react";
 import { datamhs, dataDosen, dataAdmin } from "@/data/nav";
 import ActiveRoute from "./ActiveRoute";
-import { jwtDecode } from "jwt-decode"; 
 import Icon from "../ui/Icon";
+import { getDataFromToken } from "@/utils/getDataToken";
 
-const getRoleFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
 
-  try {
-    const decoded = jwtDecode(token);
-    console.log("decoded", decoded);
-    return decoded?.role || null;
-  } catch (error) {
-    console.error("Failed to decode token:", error);
-    return null;
-  }
-};
 
 export default function SidebarNav() {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const role = getRoleFromToken();
+  const role = getDataFromToken()?.role;
 
   let navData;
   if (role === "dosen") {

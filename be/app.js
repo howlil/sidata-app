@@ -1,12 +1,4 @@
-// var createError = require("http-errors");
-// var express = require("express");
-// var path = require("path");
-// var cookieParser = require("cookie-parser");
-// var logger = require("morgan");
-// const multer = require("multer");
-// const cors = require("cors");
-// var bodyParser = require("body-parser");
-// var server = require("./src/routes/index");
+
 import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
@@ -24,7 +16,7 @@ const __dirname = path.dirname(__filename);
 var app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // Ganti dengan URL frontend Anda
+  origin: ' http://localhost:5173', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204

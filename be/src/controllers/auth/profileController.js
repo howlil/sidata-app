@@ -7,13 +7,20 @@ export const getUserById = async (req, res) => {
     const id = req.user.userId;
     const role = req.user.role;
 
+    if (!id || !role) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID atau role tidak tersedia dalam token",
+      });
+    }
+
     let user;
     if (role === "mahasiswa") {
-      user = await prisma.mahasiswa.findUnique({ where: { id } });
+      user = await prisma.mahasiswa.findUnique({ where: {idMahasiswa: id } });
     } else if (role === "dosen") {
-      user = await prisma.dosen.findUnique({ where: { id } });
+      user = await prisma.dosen.findUnique({ where: {idDosen: id } });
     } else if (role === "admin") {
-      user = await prisma.admin.findUnique({ where: { id } });
+      user = await prisma.admin.findUnique({ where: {adminId: id } });
     }
 
     if (!user) {
@@ -116,3 +123,5 @@ export const editUserProfile = async (req, res) => {
       .json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
+

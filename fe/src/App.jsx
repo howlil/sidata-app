@@ -23,6 +23,8 @@ import DataMhs from "./app/admin/dataMaster/mhs";
 import ListTA from "./app/admin/TA";
 import KelolaAkunDosen from "./app/admin/dataMaster/dosen/KelolaAkunDosen";
 import KelolaAkunMhs from "./app/admin/dataMaster/mhs/KelolaAkunMhs";
+import KonsultasiKaprodi from "./app/mahasiswa/konsultasi";
+import ChatBot from "./app/mahasiswa/chatBot";
 
 export default function App() {
   const ProtectedMhsDashboard = withRole(DashboardMhs, ["mahasiswa"]);
@@ -63,7 +65,9 @@ export default function App() {
             <Route path="/mhs/pendaftaranTA" element={<PendaftaranTA />} />
             <Route path="/mhs/pengajuanTA" element={<PengajuanTA />} />
             <Route path="/mhs/dokumen" element={<Dokumen />} />
+            <Route path="/mhs/ajukanJadwalKonsultasi" element={<KonsultasiKaprodi />} />
             <Route path="/mhs/bimbinganTA" element={<BimbingaTA />} />
+            <Route path="/sidatabot" element={<ChatBot />} />
             
             {/* Admin */}
             <Route

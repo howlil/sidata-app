@@ -1,10 +1,11 @@
 import prisma from "../../config/db.js";
 import bcrypt from "bcrypt";
 import * as yup from "yup";
+import { tipeDosen } from "../../config/typeEnum.js";
 
 const createMahasiswaSchema = yup.object().shape({
   nama: yup.string().required("Nama is required"),
-  nim: yup.string().required("NIM is required"),
+  nim: yup.string().required("NIM is required").length(10, `NIM harus 10 karakter`),
   email: yup
     .string()
     .email("Invalid email format")
@@ -19,7 +20,7 @@ const createMahasiswaSchema = yup.object().shape({
 
 const createDosenSchema = yup.object().shape({
   nama: yup.string().required("Nama is required"),
-  nip: yup.string().required("NIP is required"),
+  nip: yup.string().required("NIP is required").length(18, `NIP harus 18 karakter`),
   email: yup
     .string()
     .email("Invalid email format")
@@ -38,8 +39,10 @@ const createDosenSchema = yup.object().shape({
       })
     )
     .min(1, "Minimal satu bidang dosen")
-    .max(3, "Maksimal tiga bidang dosen"),
+    .max(2, "Maksimal dua bidang dosen"),
 });
+
+
 export const buatAkunMahasiswa = async (req, res) => {
   try {
     const { nama, nim, email, password, alamat } = req.body;
@@ -133,15 +136,60 @@ export const buatAkunDosen = async (req, res) => {
       },
     });
 
-    const { password: _, ...dosenData } = dosen;
-
-    res
-      .status(201)
-      .json({
+    try {
+      const jabatan = await prisma.jabatan.findUnique({
+        where: { jabatanId: dosen.jabatanId },
+      });
+      if (!jabatan) {
+        return res.status(404).json({
+          success: false,
+          message: "Jabatan tidak ditemukan",
+        });
+      }
+    
+      let pembimbingTypes = [];
+      if (jabatan.namaJabatan === "Asisten Ahli") {
+        pembimbingTypes.push(tipeDosen.utama, tipeDosen.asisten);
+      } else if (jabatan.namaJabatan === "Lektor" || jabatan.namaJabatan === "Lektor Kepala") {
+        pembimbingTypes.push(tipeDosen.utama, tipeDosen.asisten);
+      } else if (jabatan.namaJabatan === "Profesor") {
+        pembimbingTypes.push(tipeDosen.utama);
+      }
+    
+      console.log("Pembimbing types: ", pembimbingTypes);
+    
+      const pembimbingPromises = pembimbingTypes.map((type) =>
+        prisma.dosenPembimbing.create({
+          data: {
+            dosenId: dosen.idDosen,
+            tipePembimbing: type,
+          },
+        })
+      );
+    
+      await Promise.all(pembimbingPromises);
+    
+      const { password, ...dosenData } = dosen;
+    
+      res.status(201).json({
         success: true,
         message: "Akun Dosen Berhasil dibuat",
         data: dosenData,
       });
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation error",
+          errors: error.errors,
+        });
+      }
+      console.error("Unhandled error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return res.status(400).json({
@@ -150,13 +198,11 @@ export const buatAkunDosen = async (req, res) => {
         errors: error.errors,
       });
     }
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: "Error saat membuat akun",
-        error: error.message,
-      });
+    res.status(400).json({
+      success: false,
+      message: "Error saat membuat akun",
+      error: error.message,
+    });
   }
 };
 
@@ -272,7 +318,7 @@ export const getAllAkunDosen = async (req, res) => {
 };
 const editMahasiswaSchema = yup.object().shape({
   nama: yup.string().optional(),
-  nim: yup.string().optional(),
+  nim: yup.string().optional().length(10, `NIM harus 10 karakter`),
   email: yup
     .string()
     .email("Invalid email format")
@@ -357,7 +403,7 @@ export const editAkunMahasiswa = async (req, res) => {
 
 const editDosenSchema = yup.object().shape({
   nama: yup.string().optional(),
-  nip: yup.string().optional(),
+  nip: yup.string().optional().length(18, `NIP harus 18 karakter`),
   email: yup
     .string()
     .email("Invalid email format")
@@ -368,7 +414,7 @@ const editDosenSchema = yup.object().shape({
     .array()
     .of(yup.string().required("Bidang Dosen is required"))
     .min(1, "Minimal satu bidang dosen")
-    .max(3, "Maksimal tiga bidang dosen"),
+    .max(2, "Maksimal dua bidang dosen"),
 });
 
 export const editAkunDosen = async (req, res) => {
@@ -462,3 +508,132 @@ export const editAkunDosen = async (req, res) => {
     });
   }
 };
+
+
+export const getDosenByBidang = async (req, res) => {
+  try {
+    const { bidangId } = req.params;
+
+    if (!bidangId) {
+      return res.status(400).json({
+        success: false,
+        message: "Bidang ID diperlukan",
+      });
+    }
+
+    const bidangDosen = await prisma.bidangDosen.findMany({
+      where: {
+        bidangId: bidangId,
+      },
+      include: {
+        Bidang: true, 
+        Dosen: true   
+      }
+    });
+
+    if (bidangDosen.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Tidak ada dosen ditemukan untuk bidang ini",
+      });
+    }
+
+    const dosenList = bidangDosen.map((bd) => bd.Dosen);
+
+    res.status(200).json({
+      success: true,
+      data: dosenList,
+    });
+  } catch (error) {
+    console.error("Error fetching dosen by bidang:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server: " + error.message,
+    });
+  }
+};
+
+
+export const getAllDosenPembimbing = async (req, res) => {
+  try {
+    const dosenPembimbingList = await prisma.dosenPembimbing.findMany({
+      include: {
+        Dosen: true, 
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengambil semua akun dosen pembimbing",
+      data: dosenPembimbingList,
+    });
+  } catch (error) {
+    console.error("Error fetching all dosen pembimbing:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server: " + error.message,
+    });
+  }
+};
+
+export const getDosenPembimbingByBidang = async (req, res) => {
+  try {
+    const { bidangId } = req.params; 
+
+    const dosenPembimbingList = await prisma.dosenPembimbing.findMany({
+      where: {
+        Dosen: {
+          BidangDosen: {
+            some: {
+              bidangId: bidangId,
+            },
+          },
+        },
+      },
+      include: {
+        Dosen: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mengambil dosen pembimbing berdasarkan bidang",
+      data: dosenPembimbingList,
+    });
+  } catch (error) {
+    console.error("Error fetching dosen pembimbing by bidang:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server: " + error.message,
+    });
+  }
+};
+
+export const getDosenPembimbingId  = async(req,res)=>{
+  const {dosenId,tipePembimbing,jabatanId} = req.body
+  try {
+    const dosenPembimbing = await prisma.dosenPembimbing.findFirst({
+      where:{
+        dosenId,
+        tipePembimbing,
+        Dosen:{
+          jabatanId
+        }
+      }
+    })
+    if(!dosenPembimbing){
+      return res.status(404).json({
+        success:false,
+        message:"Dosen pembimbing tidak ditemukan"
+      })
+    }
+    res.status(200).json({
+      success:true,
+      message:"Dosen pembimbing ditemukan",
+      data:dosenPembimbing
+    })
+  } catch (error) {
+   console.error("Error fetching dosen pembimbing by id:", error);
+  }
+
+}

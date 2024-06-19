@@ -6,7 +6,7 @@ function Toast({ message, isVisible, onClose, isSuccess }) {
     if (isVisible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000); // Toast visibility duration
+      }, 3000); 
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose]);

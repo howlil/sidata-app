@@ -9,11 +9,11 @@ const InputCheckList = ({ label, items, selectedItems, onSelect }) => {
           <input
             type="checkbox"
             className="mr-2"
-          checked={selectedItems?.includes(item.value)}
+            checked={selectedItems?.includes(item.value)}
             onChange={() => onSelect(item)}
           />
           <span>{item.name}</span>
-          <span className="ml-auto">{item.details}</span>
+          <span className="ml-auto text-neutral-500">{item.details}</span>
         </div>
       ))}
     </section>

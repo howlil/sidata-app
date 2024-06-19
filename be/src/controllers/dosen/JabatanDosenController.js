@@ -11,7 +11,7 @@ export const createJabatan = async (req, res) => {
   
       await jabatanSchema.validate(req.body, { abortEarly: false });
   
-      const existingJabatan = await prisma.jabatan.findUnique({
+      const existingJabatan = await prisma.jabatan.findFirst({
         where: {
           namaJabatan,
         },

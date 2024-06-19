@@ -11,7 +11,6 @@ import editAkunDosen from "@/apis/admin/datamaster/dosen/editAkunDosen";
 import getAkunDosenById from "@/apis/admin/datamaster/dosen/getAkunDosenbyId";
 import getAllBidang from "@/apis/dosen/bidang/getAllBidang";
 import getAllJabatan from "@/apis/dosen/jabatan/getAllJabatan";
-import bcrypt from "bcryptjs/dist/bcrypt";
 
 export default function KelolaAkunDosen() {
   const navigate = useNavigate();
@@ -98,7 +97,6 @@ export default function KelolaAkunDosen() {
   const handleSelectBidang = (selectedBidang) => {
     setBidangDosen((prev) => {
       if (prev.includes(selectedBidang.value)) {
-        console.log(prev.filter((bidang) => bidang !== selectedBidang.value));
         return prev.filter((bidang) => bidang !== selectedBidang.value);
       } else {
         return [...prev, selectedBidang.value];

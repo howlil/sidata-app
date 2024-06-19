@@ -11,7 +11,7 @@ export const createBidang = async (req, res) => {
 
     await bidangSchema.validate(req.body, { abortEarly: false });
 
-    const existingBidang = await prisma.bidang.findUnique({
+    const existingBidang = await prisma.bidang.findFirst({
       where: {
         namaBidang,
       },

@@ -24,40 +24,41 @@ model Token {
   mahasiswaId String?
   dosenId     String?
   adminId     String?
-  Mahasiswa   Mahasiswa? @relation(fields: [mahasiswaId], references: [idMahasiswa])
-  Dosen       Dosen? @relation(fields: [dosenId], references: [idDosen])
-  Admin       Admin? @relation(fields: [adminId], references: [adminId])
+  Mahasiswa   Mahasiswa? @relation(fields: [mahasiswaId], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
+  Dosen       Dosen? @relation(fields: [dosenId], references: [idDosen],onDelete: Cascade, onUpdate: Cascade)
+  Admin       Admin? @relation(fields: [adminId], references: [adminId],onDelete: Cascade, onUpdate: Cascade)
 }
 
 model TA {
   idTA         String    @id @default(cuid())
   idMahasiswa  String    @unique
   ideTA        String
-  deskrisiIde  String
+  deskripsiIde  String
   judulTA      String?
   bidangId     String
   statusTA     statusTa
   status       status
-  Mahasiswa    Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
-  Bidang       Bidang @relation(fields: [bidangId], references: [bidangId])
+  Mahasiswa    Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
+  Bidang       Bidang @relation(fields: [bidangId], references: [bidangId],onDelete: Cascade, onUpdate: Cascade)
   DosenPembimbingTA DosenPembimbingTA[]
   DaftarTA     DaftarTA[]
 }
 
 model DosenPembimbingTA {
   idTA             String
-  dosenPembimbinID String
+  dosenPembimbingID String
   approved         status? 
-  TA               TA @relation(fields: [idTA], references: [idTA])
-  DosenPembimbing  DosenPembimbing @relation(fields: [dosenPembimbinID], references: [id])
-  @@id([idTA, dosenPembimbinID])
+  TA               TA @relation(fields: [idTA], references: [idTA], onDelete: Cascade, onUpdate: Cascade)
+  DosenPembimbing  DosenPembimbing @relation(fields: [dosenPembimbingID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@id([idTA, dosenPembimbingID])
 }
+
 
 model DosenPembimbing {
   id             String @id @default(cuid())
   dosenId        String
   tipePembimbing tipePembimbing
-  Dosen          Dosen @relation(fields: [dosenId], references: [idDosen])
+  Dosen          Dosen @relation(fields: [dosenId], references: [idDosen],onDelete: Cascade, onUpdate: Cascade)
   DosenPembimbingTA DosenPembimbingTA[]
   JadwalBimbinganDosen JadwalBimbinganDosen[]
 }
@@ -73,8 +74,8 @@ model DaftarTA {
   suratIzinKuliah String
   buktiKP        String
   status         status
-  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
-  TA             TA @relation(fields: [idTA], references: [idTA])
+  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
+  TA             TA @relation(fields: [idTA], references: [idTA],onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Mahasiswa {
@@ -105,7 +106,7 @@ model Dosen {
   Token                Token[]
   DosenPembimbing      DosenPembimbing[]
   BidangDosen          BidangDosen[]
-  Jabatan              Jabatan @relation(fields: [jabatanId], references: [jabatanId])
+  Jabatan              Jabatan @relation(fields: [jabatanId], references: [jabatanId],onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Jabatan {
@@ -124,8 +125,8 @@ model Bidang {
 model BidangDosen {
   bidangId      String
   dosenId       String
-  Bidang        Bidang @relation(fields: [bidangId], references: [bidangId])
-  Dosen         Dosen @relation(fields: [dosenId], references: [idDosen])
+  Bidang        Bidang @relation(fields: [bidangId], references: [bidangId],onDelete: Cascade, onUpdate: Cascade)
+  Dosen         Dosen @relation(fields: [dosenId], references: [idDosen],onDelete: Cascade, onUpdate: Cascade)
   @@id([bidangId, dosenId])
 }
 
@@ -139,8 +140,8 @@ model JadwalBimbinganDosen {
   dosPembimbingId   String
   waktuMulai        DateTime
   waktuSelesai      DateTime
-  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
-  DosenPembimbing   DosenPembimbing @relation(fields: [dosPembimbingId], references: [id])
+  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
+  DosenPembimbing   DosenPembimbing @relation(fields: [dosPembimbingId], references: [id],onDelete: Cascade, onUpdate: Cascade)
 }
 
 model JadwalKonsulProdi {
@@ -152,8 +153,8 @@ model JadwalKonsulProdi {
   tanggal           DateTime
   waktuMulai        DateTime
   waktuSelesai      DateTime
-  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
-  Admin             Admin @relation(fields: [idAdmin], references: [adminId])
+  Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
+  Admin             Admin @relation(fields: [idAdmin], references: [adminId],onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Message {
@@ -162,17 +163,18 @@ model Message {
   text           String
   isUserMessage  Boolean
   timestamp      DateTime
-  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa])
+  Mahasiswa      Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Dokumen {
   dokumenId      String  @id @default(cuid())
   adminId        String
   judulDokumen   String
-  Admin          Admin @relation(fields: [adminId], references: [adminId])
+  Admin          Admin @relation(fields: [adminId], references: [adminId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum statusTa {
+  belumAda
   ide
   judul
   proposal

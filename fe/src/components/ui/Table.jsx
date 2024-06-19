@@ -11,7 +11,7 @@ const Tables = ({ columns, data, onEdit, onDelete,edit,del }) => {
         <tr>
           <th className="text-start pl-6 font-normal">No</th>
           {columns.map((column, index) => (
-            <th className="py-5  font-semibold text-start pl-4" key={index}>{column.header}</th>
+            <th className="py-2.5   font-semibold text-start pl-4" key={index}>{column.header}</th>
           ))}
           <th className="text-end  font-normal  pr-6">Aksi</th>
         </tr>
