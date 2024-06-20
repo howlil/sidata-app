@@ -10,3 +10,11 @@
     transition: all 500ms ease-in-out;
   }
 }
+.section-scroll-hide::-webkit-scrollbar {
+  display: none; 
+}
+
+.section-scroll-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;  
+}

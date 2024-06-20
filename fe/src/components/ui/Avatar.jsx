@@ -29,7 +29,7 @@ const Avatar = ({ onClick }) => {
         <img
           src={`${import.meta.env.VITE_API_BASE_URL}/fotoUser/${foto}`}
           alt="User Avatar"
-          className="rounded-full w-10 "
+          className={`rounded-full w-12 `}
         />
       ) : (
         <div className="rounded-full bg-neutral-200 p-2">

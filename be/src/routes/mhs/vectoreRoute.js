@@ -5,5 +5,6 @@ import { handleChatMessage } from '../../controllers/mhs/chatBotController.js';
 
 router.post('/vectorize-pdf', vectorizePdf);
 router.post('/chatBot', handleChatMessage);
+router.get('/chatBotStream', handleChatMessage);
 
 export default router;
