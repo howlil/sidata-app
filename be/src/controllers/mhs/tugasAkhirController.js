@@ -1,5 +1,5 @@
 import prisma from "../../config/db.js";
-import { statusTA, status, tipeDosen } from "../../config/typeEnum.js";
+import { statusTA, status } from "../../config/typeEnum.js";
 import multer from "multer";
 import path from "path";
 import * as yup from "yup";
@@ -18,22 +18,25 @@ const ideTASchema = yup.object().shape({
     )
     .min(1, "Minimal 1 dosen pembimbing harus dipilih")
     .max(2, "Maksimal 2 dosen pembimbing dapat dipilih")
-    .required("Minimal 1 dosen pembimbing harus dipilih"),
-});
-
+  
+})
 
 const editIdeTASchema = yup.object().shape({
   idTA: yup.string().required("ID TA wajib diisi"),
   ideTA: yup.string().required("Ide TA wajib diisi"),
-  deskrisiIde: yup.string().required("Deskripsi ide wajib diisi"),
+  deskripsiIde: yup.string().required("Deskripsi ide wajib diisi"),
   bidangId: yup.string().required("Bidang ID wajib diisi"),
-  dosenPembimbinIDs: yup
+  dosenPembimbingIDs: yup
     .array()
-    .of(yup.string().required())
-    .min(1)
-    .max(2)
-    .required("Minimal 1 dosen pembimbing harus dipilih"),
-});
+    .of(
+      yup.object().shape({
+        dosenPembimbingID: yup.string().required("ID dosen pembimbing wajib diisi"),
+      })
+    )
+    .min(1, "Minimal 1 dosen pembimbing harus dipilih")
+    .max(2, "Maksimal 2 dosen pembimbing dapat dipilih")
+  
+})
 
 const ajukanJudulTASchema = yup.object().shape({
   idTA: yup.string().required("ID TA wajib diisi"),
@@ -90,9 +93,9 @@ export const ajukanIdeTA = async (req, res) => {
         statusTA: statusTA.belumAda,
         status: status.diproses,
         DosenPembimbingTA: {
-          create: dosenPembimbingIDs.map((dosenId) => ({
-            dosenPembimbingID: dosenId,
-            approved: status.diproses,
+          create: dosenPembimbingIDs.map(({ dosenPembimbingID }) => ({
+            dosenPembimbingID,
+            status: status.diproses,
           })),
         },
       },
@@ -121,7 +124,7 @@ export const editAjukanIdeTA = async (req, res) => {
   try {
     await editIdeTASchema.validate(req.body);
 
-    const { idTA, ideTA, deskrisiIde, bidangId, dosenPembimbinIDs } = req.body;
+    const {  ideTA, deskripsiIde, bidangId, dosenPembimbinIDs ,idTA,} = req.body;
 
     const existingTA = await prisma.tA.findUnique({ where: { idTA } });
     if (!existingTA) {
@@ -141,13 +144,14 @@ export const editAjukanIdeTA = async (req, res) => {
       where: { idTA },
       data: {
         ideTA,
-        deskrisiIde,
+        deskripsiIde,
         bidangId,
+        status: status.diproses,  
         DosenPembimbingTA: {
           deleteMany: {},
-          create: dosenPembimbinIDs.map((dosenPembimbinID) => ({
+          create: dosenPembimbinIDs?.map((dosenPembimbinID) => ({
             dosenPembimbinID,
-            approved: status.diproses,
+            status: status.diproses,
           })),
         },
       },
@@ -155,7 +159,7 @@ export const editAjukanIdeTA = async (req, res) => {
         DosenPembimbingTA: true,
       },
     });
-
+    
     res.status(200).json({
       success: true,
       message: "Ide TA berhasil diedit",
@@ -364,4 +368,6 @@ export const daftarTA = async (req, res) => {
     }
   });
 };
+
+
 

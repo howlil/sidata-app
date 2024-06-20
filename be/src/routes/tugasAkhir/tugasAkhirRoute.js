@@ -6,9 +6,15 @@ import {
   editAjukanIdeTA,
   editJudulTA,
   daftarTA,
-  uploadFiles
+  uploadFiles,
 } from "../../controllers/mhs/tugasAkhirController.js";
 import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
+import {
+  getAllTAMahasiswaByDosPemId,
+  getTAdetailByIdMahasiswa,
+  accIdeTA,
+  accJudulTA,
+} from "../../controllers/dosen/DosenKelolaTAController.js";
 
 router.post(
   "/ajukanIdeTA",
@@ -18,7 +24,6 @@ router.post(
 );
 router.put(
   "/editAjukanIdeTA/:id",
-  authorizeRole("mahasiswa"),
   authenticateToken,
   editAjukanIdeTA
 );
@@ -40,6 +45,26 @@ router.post(
   authenticateToken,
   uploadFiles,
   daftarTA
+);
+
+router.get(
+  "/getAllTAMahasiswaByDosPemId/:id",
+  authenticateToken,
+  getAllTAMahasiswaByDosPemId
+);
+
+router.get(
+  "/getTAdetailByIdMahasiswa/:id",
+  authenticateToken,
+  getTAdetailByIdMahasiswa
+);
+
+router.put("/accIdeTA", authenticateToken, accIdeTA);
+
+router.put(
+  "/accJudulTA",
+  authenticateToken,
+  accJudulTA
 );
 
 export default router;

@@ -10,8 +10,8 @@ const Tables = ({ columns, data, onEdit, onDelete,edit,del }) => {
       <thead className="bg-ijau-400   ">
         <tr>
           <th className="text-start pl-6 font-normal">No</th>
-          {columns.map((column, index) => (
-            <th className="py-2.5   font-semibold text-start pl-4" key={index}>{column.header}</th>
+          {columns?.map((column, index) => (
+            <th className="py-2.5   font-medium text-start pl-4" key={index}>{column.header}</th>
           ))}
           <th className="text-end  font-normal  pr-6">Aksi</th>
         </tr>
@@ -20,7 +20,7 @@ const Tables = ({ columns, data, onEdit, onDelete,edit,del }) => {
         {data?.map((row, rowIndex) => (
           <tr className="border-b border-neutral-300" key={rowIndex}>
             <td className="text-center">{rowIndex + 1}</td> 
-            {columns.map((column, colIndex) => (
+            {columns?.map((column, colIndex) => (
               <td className="py-2 text-start pl-4" key={colIndex}>{getNestedProperty(row, column.accessor)}</td>
             ))}
             <td className="py-2 flex justify-end">

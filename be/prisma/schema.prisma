@@ -47,7 +47,7 @@ model TA {
 model DosenPembimbingTA {
   idTA             String
   dosenPembimbingID String
-  approved         status? 
+  status         status
   TA               TA @relation(fields: [idTA], references: [idTA], onDelete: Cascade, onUpdate: Cascade)
   DosenPembimbing  DosenPembimbing @relation(fields: [dosenPembimbingID], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@id([idTA, dosenPembimbingID])
@@ -183,7 +183,7 @@ enum statusTa {
 enum status {
   diproses
   ditolak
-  diterima
+  disetujui
 }
 
 enum tipePembimbing {

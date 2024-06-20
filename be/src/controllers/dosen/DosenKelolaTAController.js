@@ -1,8 +1,20 @@
 import prisma from "../../config/db.js";
-import { status, statusTA, tipePembimbing } from "../../config/typeEnum";
-exports.accIdeTA = async (req, res) => {
+import { status, statusTA, tipeDosen } from "../../config/typeEnum.js";
+
+import * as yup from "yup";
+
+const accIdeTASchema = yup.object().shape({
+  idTA: yup.string().required("ID TA wajib diisi"),
+  isApproved: yup.bool().required("Status persetujuan wajib diisi"),
+  id: yup.string().required("ID pembimbing wajib diisi"),
+});
+
+
+export const accIdeTA = async (req, res) => {
   try {
-    const { idTA, isApproved, dosenId } = req.body;
+    await accIdeTASchema.validate(req.body);
+
+    const { idTA, isApproved, id } = req.body;
 
     const existingTA = await prisma.tA.findUnique({ where: { idTA } });
     if (!existingTA) {
@@ -11,22 +23,17 @@ exports.accIdeTA = async (req, res) => {
         .json({ success: false, message: "TA tidak ditemukan" });
     }
 
-    const advisor = await prisma.dosen.findUnique({
-      where: { idDosen: dosenId },
-    });
-    if (!advisor) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Dosen tidak ditemukan" });
-    }
+    const stat = isApproved ? status.disetujui : status.ditolak;
 
-    const advisorApproval = await prisma.dosenPembimbingTA.updateMany({
+    const advisorApproval = await prisma.dosenPembimbingTA.update({
       where: {
-        idTA,
-        dosenPembimbinID: dosenId,
+        idTA_dosenPembimbingID: {
+          idTA,
+          dosenPembimbingID: id,
+        },
       },
       data: {
-        approved: isApproved ? status.diterima : status.ditolak,
+        status: stat,
       },
     });
 
@@ -35,76 +42,116 @@ exports.accIdeTA = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Pembimbing tidak ditemukan" });
     }
+    const pembimbingCount = await prisma.dosenPembimbingTA.count({
+            where: { idTA },
+          });
+      
+          if (pembimbingCount === 1) {
+            if (isApproved) {
+              const updatedTA = await prisma.tA.update({
+                where: { idTA },
+                data: {
+                  status: status.disetujui,
+                  statusTA: statusTA.ide,
+                },
+              });
+      
+              await prisma.dosenPembimbingTA.updateMany({
+                where: { idTA },
+                data: { status: status.diproses },
+              });
+      
+              return res.status(200).json({
+                success: true,
+                message: "Ide TA disetujui oleh pembimbing",
+                data: updatedTA,
+              });
+            } else {
+              const updatedTA = await prisma.tA.update({
+                where: { idTA },
+                data: {
+                  status: status.ditolak,
+                  statusTA: statusTA.belumAda,
+                },
+              });
+      
+              await prisma.dosenPembimbingTA.updateMany({
+                where: { idTA },
+                data: { status: status.diproses },
+              });
+      
+              return res.status(200).json({
+                success: true,
+                message: "Ide TA ditolak oleh pembimbing",
+                data: updatedTA,
+              });
+            }
+          } else if (pembimbingCount === 2) {
+            const anyRejected = await prisma.dosenPembimbingTA.findMany({
+              where: {
+                idTA,
+                status: status.ditolak,
+              },
+            });
+      console.log("pass");
+            if (anyRejected.length > 0) {
+              const updatedTA = await prisma.tA.update({
+                where: { idTA },
+                data: {
+                  status: status.ditolak,
+                  statusTA: statusTA.belumAda,
+                },
+              });
+      
+              await prisma.dosenPembimbingTA.updateMany({
+                where: { idTA },
+                data: { status: status.belumAda },
+              });
+      
+              return res.status(200).json({
+                success: true,
+                message: "Ide TA ditolak oleh salah satu atau kedua pembimbing",
+                data: updatedTA,
+              });
+            } else {
+              
+              const allApproved = await prisma.dosenPembimbingTA.findMany({
+                where: {
+                  idTA,
+                  status: status.disetujui,
+                },
+              });
+              console.log("pass");
 
-    // Check if any advisor has rejected the TA idea
-    const anyRejected = await prisma.dosenPembimbingTA.findMany({
-      where: {
-        idTA,
-        approved: status.ditolak,
-      },
-    });
+              if (allApproved.length === 2) {
+                const updatedTA = await prisma.tA.update({
+                  where: { idTA },
+                  data: {
+                    status: status.disetujui,
+                    statusTA: statusTA.ide,
+                  },
+                });
+      
+                await prisma.dosenPembimbingTA.updateMany({
+                  where: { idTA },
+                  data: { status: status.belumAda },
+                });
+      
+                return res.status(200).json({
+                  success: true,
+                  message: "Ide TA diterima oleh kedua pembimbing",
+                  data: updatedTA,
+                });
+              }
+            }
+          }
 
-    if (anyRejected.length > 0) {
-      const updatedTA = await prisma.tA.update({
-        where: { idTA },
-        data: {
-          status: status.ditolak,
-          statusTA: statusTA.ide,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Ide TA ditolak oleh salah satu atau kedua pembimbing",
-        data: updatedTA,
-      });
-    }
-
-    // Check if all advisors have approved the TA idea
-    const allApproved = await prisma.dosenPembimbingTA.findMany({
-      where: {
-        idTA,
-        approved: status.diterima,
-      },
-    });
-
-    const totalAdvisors = await prisma.dosenPembimbingTA.count({
-      where: { idTA },
-    });
-
-    if (allApproved.length === totalAdvisors) {
-      const updatedTA = await prisma.tA.update({
-        where: { idTA },
-        data: {
-          status: status.diterima,
-          statusTA: statusTA.ide,
-        },
-      });
-
-      if (allApproved.length === 2) {
-        await prisma.dosenPembimbing.update({
-          where: { id: allApproved[0].id },
-          data: { tipePembimbing: tipePembimbing.utama },
-        });
-
-        await prisma.dosenPembimbing.update({
-          where: { id: allApproved[1].id },
-          data: { tipePembimbing: tipePembimbing.asisten },
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Ide TA disetujui oleh semua pembimbing",
-        data: updatedTA,
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: `Ide TA ${isApproved ? "disetujui" : "ditolak"} oleh pembimbing`,
-    });
   } catch (error) {
+    if (error instanceof yup.ValidationError) {
+      return res
+        .status(400)
+        .json({ success: false, message: error.errors.join(", ") });
+    }
     console.error("Error approving/rejecting TA idea:", error);
     res
       .status(500)
@@ -112,104 +159,116 @@ exports.accIdeTA = async (req, res) => {
   }
 };
 
-exports.accJudulTA = async (req, res) => {
+export const accJudulTA = async (req, res) => {
   try {
     const { idTA, isApproved, dosenId } = req.body;
-
-    const existingTA = await prisma.tA.findUnique({ where: { idTA } });
-    if (!existingTA) {
-      return res
-        .status(404)
-        .json({ success: false, message: "TA tidak ditemukan" });
-    }
-
-    const advisor = await prisma.dosen.findUnique({
-      where: { idDosen: dosenId },
-    });
-    if (!advisor) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Dosen tidak ditemukan" });
-    }
-
-    const advisorApproval = await prisma.dosenPembimbingTA.updateMany({
-      where: {
-        idTA,
-        dosenPembimbinID: dosenId,
-      },
-      data: {
-        approved: isApproved ? status.diterima : status.ditolak,
-      },
-    });
-
-    if (!advisorApproval) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Pembimbing tidak ditemukan" });
-    }
-
-    // Check if any advisor has rejected the TA title
-    const anyRejected = await prisma.dosenPembimbingTA.findMany({
-      where: {
-        idTA,
-        approved: status.ditolak,
-      },
-    });
-
-    if (anyRejected.length > 0) {
-      const updatedTA = await prisma.tA.update({
-        where: { idTA },
-        data: {
-          status: status.ditolak,
-          statusTA: statusTA.judul,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Judul TA ditolak oleh salah satu atau kedua pembimbing",
-        data: updatedTA,
-      });
-    }
-
-    // Check if all advisors have approved the TA title
-    const allApproved = await prisma.dosenPembimbingTA.findMany({
-      where: {
-        idTA,
-        approved: status.diterima,
-      },
-    });
-
-    const totalAdvisors = await prisma.dosenPembimbingTA.count({
-      where: { idTA },
-    });
-
-    if (allApproved.length === totalAdvisors) {
-      const updatedTA = await prisma.tA.update({
-        where: { idTA },
-        data: {
-          status: status.diterima,
-          statusTA: statusTA.judul,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Judul TA disetujui oleh semua pembimbing",
-        data: updatedTA,
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: `Judul TA ${
-        isApproved ? "disetujui" : "ditolak"
-      } oleh pembimbing`,
-    });
   } catch (error) {
     console.error("Error approving/rejecting TA title:", error);
     res
       .status(500)
       .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};
+
+export const getAllTAMahasiswaByDosPemId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const advisors = await prisma.dosenPembimbing.findMany({
+      where: {
+        dosenId: id,
+      },
+    });
+    const advisorIds = advisors.map((advisor) => advisor.id);
+    const tAs = await prisma.tA.findMany({
+      where: {
+        DosenPembimbingTA: {
+          some: {
+            dosenPembimbingID: {
+              in: advisorIds,
+            },
+          },
+        },
+      },
+      include: {
+        DosenPembimbingTA: {
+          include: {
+            DosenPembimbing: true,
+          },
+        },
+        Mahasiswa: true,
+        Bidang: true,
+      },
+    });
+
+    if (advisorIds.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "TA tidak ditemukan",
+      });
+    }
+
+    if (!tAs) {
+      return res.status(404).json({
+        success: false,
+        message: "TA tidak ditemukan",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Berhasil mendapatkan semua TA mahasiswa",
+      data: tAs,
+    });
+  } catch (error) {
+    console.error("Error getting TA by dosenId:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server: " + error.message,
+    });
+  }
+};
+
+export const getTAdetailByIdMahasiswa = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const taDetail = await prisma.tA.findUnique({
+      where: {
+        idMahasiswa: id,
+      },
+      include: {
+        DosenPembimbingTA: {
+          include: {
+            DosenPembimbing: {
+              include: {
+                Dosen: true,
+              },
+            },
+          },
+        },
+        Mahasiswa: true,
+        Bidang: true,
+      },
+    });
+
+    console.log(taDetail);
+    if (!taDetail) {
+      return res.status(404).json({
+        success: false,
+        message: "TA tidak ditemukan untuk mahasiswa ini",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: taDetail,
+    });
+  } catch (error) {
+    console.error("Error getting TA detail by idMahasiswa:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server: " + error.message,
+    });
   }
 };
