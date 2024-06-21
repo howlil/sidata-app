@@ -22,6 +22,18 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
+const port = process.env.PORT || 8080;
+const dbUrl = process.env.DATABASE_URL;
+const accessSecretKey = process.env.ACCESS_SECRET_KEY;
+const openaiApiKey = process.env.OPENAI_API_KEY;
+const openaiModel = process.env.OPENAI_MODEL;
+const pineconeApiKey = process.env.PINECONE_API_KEY;
+const pineconeEnvironment = process.env.PINECONE_ENVIRONMENT;
+const uploadthingSecret = process.env.UPLOADTHING_SECRET;
+const uploadthingAppId = process.env.UPLOADTHING_APP_ID;
+const pineconeIndex = process.env.PINECONE_INDEX;
+const pdfUrl = process.env.PDF_URL;
+
 app.use(cors(corsOptions));app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
