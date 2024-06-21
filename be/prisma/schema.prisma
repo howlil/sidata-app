@@ -136,10 +136,10 @@ model JadwalBimbinganDosen {
   kendala           String
   status            status
   progresTA         String
-  tanggal           DateTime
   dosPembimbingId   String
-  waktuMulai        DateTime
-  waktuSelesai      DateTime
+  tanggal           DateTime @db.Date
+  waktuMulai        DateTime @db.Time
+  waktuSelesai      DateTime @db.Time
   Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
   DosenPembimbing   DosenPembimbing @relation(fields: [dosPembimbingId], references: [id],onDelete: Cascade, onUpdate: Cascade)
 }
@@ -150,9 +150,9 @@ model JadwalKonsulProdi {
   idAdmin           String
   kendala           String
   status            status
-  tanggal           DateTime
-  waktuMulai        DateTime
-  waktuSelesai      DateTime
+  tanggal           DateTime @db.Date
+  waktuMulai        DateTime @db.Time
+  waktuSelesai      DateTime @db.Time
   Mahasiswa         Mahasiswa @relation(fields: [idMahasiswa], references: [idMahasiswa],onDelete: Cascade, onUpdate: Cascade)
   Admin             Admin @relation(fields: [idAdmin], references: [adminId],onDelete: Cascade, onUpdate: Cascade)
 }

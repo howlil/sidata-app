@@ -7,6 +7,8 @@ import konsultasiKaprodi from "./tugasAkhir/konsultasiTARoute.js";
 import bidang from "./dosen/BidangDosenRoute.js";
 import jabatan from "./dosen/JabatanRoute.js";
 import vectorize from "./mhs/vectoreRoute.js";
+import genertePdf from "./admin/GenerateDocRoute.js";
+import konsulProdi from './mhs/KonsultasiProdiRoute.js'
 
 const server = {
   auth,
@@ -16,7 +18,9 @@ const server = {
   konsultasiKaprodi,
   bidang,
   vectorize,
-  jabatan
+  konsulProdi,
+  jabatan,
+  genertePdf,
 };
 
 export default server;

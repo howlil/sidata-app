@@ -1,31 +1,132 @@
 import prisma from "../../config/db.js";
 import * as yup from "yup";
+import { status } from "../../config/typeEnum.js";
 
 const ajukanJadwalKonsulProdiSchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   kendala: yup.string().required("Kendala wajib diisi"),
-  tanggal: yup.date().required("Tanggal wajib diisi"),
-  waktuMulai: yup.date().required("Waktu mulai wajib diisi"),
-  waktuSelesai: yup.date().required("Waktu selesai wajib diisi"),
+  tanggal: yup
+    .date()
+    .required("Tanggal wajib diisi")
+    .test("is-weekday", "Tanggal hanya bisa di hari Senin - Kamis", (value) => {
+      const day = new Date(value).getDay();
+      return day >= 1 && day <= 4;
+    }),
+  waktuMulai: yup
+    .string()
+    .required("Waktu mulai wajib diisi")
+    .matches(/^([0-1][0-9]):([0-5][0-9])$/, "Waktu mulai harus antara jam 08:00 dan 14:59")
+    .test("is-valid-time", "Waktu mulai harus antara jam 08:00 dan 14:59", (value) => {
+      const [hour, minute] = value.split(":").map(Number);
+      return hour >= 8 && hour <= 14;
+    }),
+  waktuSelesai: yup
+    .string()
+    .required("Waktu selesai wajib diisi")
+    .matches(/^([0-1][0-9]):([0-5][0-9])$/, "Waktu selesai harus antara jam 09:00 dan 15:59")
+    .test("is-valid-time", "Waktu selesai harus antara jam 09:00 dan 15:59", (value) => {
+      const [hour, minute] = value.split(":").map(Number);
+      return hour >= 9 && hour <= 15;
+    })
+    .when("waktuMulai", (waktuMulai, schema) => {
+      return schema.test({
+        test: (waktuSelesai) => {
+          const [startTimeStr] = waktuMulai; // Destructuring to get the string value from array
+          
+          if (!startTimeStr || typeof startTimeStr !== 'string') {
+            return false;
+          }
+
+          const [startHour, startMinute] = startTimeStr.split(":").map(Number);
+          const [endHour, endMinute] = waktuSelesai.split(":").map(Number);
+
+          console.log(`Start: ${startHour}:${startMinute}`); 
+          console.log(`End: ${endHour}:${endMinute}`); 
+
+          if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
+            return false;
+          }
+
+          const startTime = startHour * 60 + startMinute;
+          const endTime = endHour * 60 + endMinute;
+
+          console.log(`Start Time: ${startTime}, End Time: ${endTime}`); // Debugging
+
+          const diffInHours = (endTime - startTime) / 60;
+          console.log(`Difference in Hours: ${diffInHours}`); // Debugging
+
+          return endTime > startTime && diffInHours === 1;
+        },
+        message: "Waktu selesai harus setelah waktu mulai dan harus berjarak 1 jam",
+      });
+    }),
 });
+
+
 
 export const ajukanJadwalKonsulProdi = async (req, res) => {
   try {
     await ajukanJadwalKonsulProdiSchema.validate(req.body);
 
-    const { idMahasiswa, kendala, tanggal, waktuMulai, waktuSelesai } =
-      req.body;
+    const { idMahasiswa, kendala, tanggal, waktuMulai, waktuSelesai ,adminId } = req.body;
 
-    const newJadwalKonsulProdi = await prisma.jadwalKonsulProdi.create({
-      data: {
-        idMahasiswa,
-        kendala,
-        tanggal,
-        waktuMulai,
-        waktuSelesai,
-        status: "diproses",
-      },
-    });
+
+    const waktuMulaiDateTime = new Date(`${tanggal}T${waktuMulai}:00.000Z`);
+    const waktuSelesaiDateTime = new Date(`${tanggal}T${waktuSelesai}:00.000Z`);
+    console.log(waktuMulaiDateTime);
+    console.log(waktuSelesaiDateTime);
+  
+      const existingJadwal = await prisma.jadwalKonsulProdi.findFirst({
+        where: {
+          tanggal: new Date(tanggal),
+          OR: [
+            {
+              waktuMulai: {
+                lte: waktuMulaiDateTime,
+              },
+              waktuSelesai: {
+                gte: waktuMulaiDateTime,
+              },
+            },
+            {
+              waktuMulai: {
+                lte: waktuSelesaiDateTime,
+              },
+              waktuSelesai: {
+                gte: waktuSelesaiDateTime,
+              },
+            },
+            {
+              waktuMulai: {
+                gte: waktuMulaiDateTime,
+                lte: waktuSelesaiDateTime,
+              },
+            },
+          ],
+        },
+      });
+  
+      if (existingJadwal) {
+        return res.status(400).json({
+          success: false,
+          message: "Jadwal konsultasi prodi sudah terisi",
+        });
+      }
+      console.log(waktuMulaiDateTime);
+      console.log(waktuSelesaiDateTime);
+  
+      const newJadwalKonsulProdi = await prisma.jadwalKonsulProdi.create({
+        data: {
+          idMahasiswa,
+          idAdmin: adminId,
+          kendala,
+          tanggal: new Date(tanggal),
+          waktuMulai: waktuMulaiDateTime,
+          waktuSelesai: waktuSelesaiDateTime,
+          status: status.diproses,
+        },
+      });
+  
 
     res.status(201).json({
       success: true,
@@ -34,16 +135,13 @@ export const ajukanJadwalKonsulProdi = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
-      return res
-        .status(400)
-        .json({ success: false, message: error.errors.join(", ") });
+      return res.status(400).json({ success: false, message: error.errors.join(", ") });
     }
     console.error("Error submitting schedule:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Kesalahan server: " + error.message });
+    res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
 
 export const getAllJadwalKonsulProdi = async (req, res) => {
   try {
@@ -79,7 +177,6 @@ export const getRiwayatKonsulProdi = async (req, res) => {
     const riwayatKonsulProdi = await prisma.jadwalKonsulProdi.findMany({
       where: {
         idMahasiswa,
-        status: "ditolak",
       },
       include: {
         Mahasiswa: true,
@@ -87,12 +184,6 @@ export const getRiwayatKonsulProdi = async (req, res) => {
       },
     });
 
-    if (riwayatKonsulProdi.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Tidak ada riwayat konsultasi ditolak untuk mahasiswa ini",
-      });
-    }
 
     res.status(200).json({
       success: true,
