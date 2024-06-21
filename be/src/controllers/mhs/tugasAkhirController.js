@@ -1,8 +1,13 @@
 import prisma from "../../config/db.js";
 import { statusTA, status } from "../../config/typeEnum.js";
 import multer from "multer";
-import path from "path";
 import * as yup from "yup";
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const ideTASchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
@@ -52,6 +57,8 @@ const daftarTASchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   idTA: yup.string().required("ID TA wajib diisi"),
 });
+
+
 
 export const ajukanIdeTA = async (req, res) => {
   try {
@@ -119,7 +126,6 @@ export const ajukanIdeTA = async (req, res) => {
 };
 
 
-
 export const editAjukanIdeTA = async (req, res) => {
   try {
     await editIdeTASchema.validate(req.body);
@@ -178,6 +184,8 @@ export const editAjukanIdeTA = async (req, res) => {
   }
 };
 
+
+
 export const ajukanJudulTA = async (req, res) => {
   try {
     await ajukanJudulTASchema.validate(req.body);
@@ -191,10 +199,10 @@ export const ajukanJudulTA = async (req, res) => {
         .json({ success: false, message: "TA tidak ditemukan" });
     }
 
-    if (existingTA.status !== status.diterima) {
+    if (existingTA.status !== status.disetujui && existingTA.statusTA !== statusTA.ide) {
       return res.status(400).json({
         success: false,
-        message: "Hanya TA dengan status diterima yang dapat mengajukan judul",
+        message: "Hanya TA dengan status diterima dan berupa ide yang dapat mengajukan judul",
       });
     }
 
@@ -206,10 +214,9 @@ export const ajukanJudulTA = async (req, res) => {
       },
     });
 
-    // Reset approval status for all advisors
     await prisma.dosenPembimbingTA.updateMany({
       where: { idTA },
-      data: { approved: status.diproses },
+      data: { status: status.diproses },
     });
 
     res.status(200).json({
@@ -275,14 +282,20 @@ export const editJudulTA = async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../../../public/images/filepdf"));
+    console.log('Setting destination for', file.originalname);
+   const destPath = path.join(__dirname, "../../../public/images/filepdf");
+    console.log('Setting destination for', file.originalname, 'to', destPath); // Debugging
+    cb(null, destPath);  
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+    const filename = Date.now() + "-" + file.originalname;
+    console.log('Setting filename for', file.originalname, 'to', filename);
+    cb(null, filename);
   },
 });
 
 const fileFilter = function (req, file, cb) {
+  console.log('Filtering file', file.originalname);
   const allowedTypes = ["application/pdf"];
   if (!allowedTypes.includes(file.mimetype)) {
     const error = new multer.MulterError(
@@ -297,77 +310,13 @@ const fileFilter = function (req, file, cb) {
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-}).fields([
-  { name: "transkripNilai", maxCount: 1 },
-  { name: "buktiLulus", maxCount: 1 },
-  { name: "buktiKRS", maxCount: 1 },
-  { name: "suratTugas", maxCount: 1 },
-  { name: "suratIzinKuliah", maxCount: 1 },
-  { name: "buktiKP", maxCount: 1 },
-]);
-
-export const uploadFiles = upload;
-
-export const daftarTA = async (req, res) => {
-  uploadFiles(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ success: false, message: err.message });
-    } else if (err) {
-      return res.status(500).json({ success: false, message: err.message });
-    }
-
-    try {
-      await daftarTASchema.validate(req.body);
-
-      const { idMahasiswa, idTA } = req.body;
-      const files = req.files;
-
-      if (
-        !files.transkripNilai ||
-        !files.buktiLulus ||
-        !files.buktiKRS ||
-        !files.suratTugas ||
-        !files.suratIzinKuliah ||
-        !files.buktiKP
-      ) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Semua file harus diunggah" });
-      }
-
-      const newDaftarTA = await prisma.daftarTA.create({
-        data: {
-          idMahasiswa,
-          idTA,
-          transkripNilai: files.transkripNilai[0].path,
-          buktiLulus: files.buktiLulus[0].path,
-          buktiKRS: files.buktiKRS[0].path,
-          suratTugas: files.suratTugas[0].path,
-          suratIzinKuliah: files.suratIzinKuliah[0].path,
-          buktiKP: files.buktiKP[0].path,
-          status: status.diproses,
-        },
-      });
-
-      res.status(201).json({
-        success: true,
-        message: "Pendaftaran TA berhasil",
-        data: newDaftarTA,
-      });
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        return res
-          .status(400)
-          .json({ success: false, message: error.errors.join(", ") });
-      }
-      console.error("Error registering TA:", error);
-      res.status(500).json({
-        success: false,
-        message: "Kesalahan server: " + error.message,
-      });
-    }
-  });
-};
+});
 
 
+export const uploadTranskripNilai = upload.single('transkripNilai');
+export const uploadBuktiLulus = upload.single('buktiLulus');
+export const uploadBuktiKRS = upload.single('buktiKRS');
+export const uploadSuratTugas = upload.single('suratTugas');
+export const uploadSuratIzinKuliah = upload.single('suratIzinKuliah');
+export const uploadBuktiKP = upload.single('buktiKP');
 

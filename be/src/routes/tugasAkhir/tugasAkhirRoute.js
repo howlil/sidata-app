@@ -5,8 +5,13 @@ import {
   ajukanJudulTA,
   editAjukanIdeTA,
   editJudulTA,
-  daftarTA,
-  uploadFiles,
+  uploadBuktiKP,
+  uploadBuktiKRS,
+  uploadBuktiLulus,
+  uploadSuratIzinKuliah,
+  uploadSuratTugas,
+  uploadTranskripNilai,
+  daftarTAMahasiswa
 } from "../../controllers/mhs/tugasAkhirController.js";
 import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 import {
@@ -40,11 +45,8 @@ router.put(
   editJudulTA
 );
 router.post(
-  "/daftarTA",
-  authorizeRole("mahasiswa"),
-  authenticateToken,
-  uploadFiles,
-  daftarTA
+  "/daftarTAMahasiswa",
+  daftarTAMahasiswa
 );
 
 router.get(
