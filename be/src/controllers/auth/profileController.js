@@ -1,8 +1,8 @@
-const prisma = require("../../config/db");
-const multer = require("multer");
-const path = require("path");
+import prisma from "../../config/db.js";
+import multer from "multer";
+import path from "path";
 
-exports.getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   try {
     const id = req.user.userId;
     const role = req.user.role;
@@ -47,7 +47,8 @@ const fileFilter = function (req, file, cb) {
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedTypes.includes(file.mimetype)) {
       const error = new multer.MulterError("LIMIT_UNEXPECTED_FILE");
-      error.message = "Jenis File Tidak Diizinkan, Hanya JPEG dan PNG yang Diizinkan";
+      error.message =
+        "Jenis File Tidak Diizinkan, Hanya JPEG dan PNG yang Diizinkan";
       return cb(error, false);
     }
   } else {
@@ -56,19 +57,21 @@ const fileFilter = function (req, file, cb) {
   cb(null, true);
 };
 
-exports.uploadFoto = multer({ storage: storage, fileFilter: fileFilter }).single("foto");
+export const uploadFoto = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+}).single("foto");
 
-
-exports.editUserProfile = async (req, res) => {
+export const editUserProfile = async (req, res) => {
   try {
-    console.log('File:', req.file); // Debugging file
-    console.log('Body:', req.body); // Debugging body
+    console.log("File:", req.file); // Debugging file
+    console.log("Body:", req.body); // Debugging body
     const id = req.user.userId;
     const role = req.user.role.toLowerCase(); // Menurunkan semua karakter ke huruf kecil untuk konsistensi
     const { nama, email, alamat, noHp } = req.body;
     let nim_nip;
 
-    if (role === 'dosen') {
+    if (role === "dosen") {
       nim_nip = req.body.nip;
     } else {
       nim_nip = req.body.nim;
@@ -90,7 +93,7 @@ exports.editUserProfile = async (req, res) => {
     if (foto) {
       updateData.foto = foto;
     }
-    if (role === 'dosen') {
+    if (role === "dosen") {
       updateData.nip = nim_nip;
     } else {
       updateData.nim = nim_nip;

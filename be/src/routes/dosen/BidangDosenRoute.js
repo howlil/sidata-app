@@ -1,14 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+import {
   createBidang,
   deleteBidang,
   getAllBidang,
   getBidangById,
   updateBidang,
-} = require("../../controllers/dosen/BidangDosenController");
-const { authenticateToken, authorizeRole } = require("../../middlewares/auth");
-
+} from "../../controllers/dosen/BidangDosenController.js";
+import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post("/createBidang", authenticateToken, authorizeRole("admin"), createBidang);
 router.get("/getAllBidang", authenticateToken, authorizeRole("admin"), getAllBidang);
@@ -16,4 +15,4 @@ router.get("/getBidangById/:id", authenticateToken, authorizeRole("admin"), getB
 router.put("/updateBidang/:id", authenticateToken, authorizeRole("admin"), updateBidang);
 router.delete("/deleteBidang/:id", authenticateToken, authorizeRole("admin"), deleteBidang);
 
-module.exports = router;
+export default router;

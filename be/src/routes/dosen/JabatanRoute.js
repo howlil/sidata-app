@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+import {
   createJabatan,
   deleteJabatan,
   getAllJabatan,
   getJabatanById,
   updateJabatan,
-} = require("../../controllers/dosen/JabatanDosenController");
-const { authenticateToken, authorizeRole } = require("../../middlewares/auth");
+} from "../../controllers/dosen/JabatanDosenController.js";
+import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post("/createJabatan", authenticateToken, authorizeRole("admin"), createJabatan);
 router.get("/getAllJabatan", authenticateToken, authorizeRole("admin"), getAllJabatan);
@@ -15,4 +15,4 @@ router.get("/getJabatanById/:id", authenticateToken, authorizeRole("admin"), get
 router.put("/updateJabatan/:id", authenticateToken, authorizeRole("admin"), updateJabatan);
 router.delete("/deleteJabatan/:id", authenticateToken, authorizeRole("admin"), deleteJabatan);
 
-module.exports = router;
+export default router;

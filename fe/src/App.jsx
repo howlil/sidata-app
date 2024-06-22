@@ -17,6 +17,12 @@ import PendaftaranTA from "./app/mahasiswa/pendaftaranTA";
 import PengajuanTA from "./app/mahasiswa/pengajuanTA";
 import Dokumen from "./app/mahasiswa/Dokumen";
 import BimbingaTA from "./app/mahasiswa/bimbinganTA";
+import ListKonsul from "./app/admin/konsul";
+import DataDosen from "./app/admin/dataMaster/dosen";
+import DataMhs from "./app/admin/dataMaster/mhs";
+import ListTA from "./app/admin/TA";
+import KelolaAkunDosen from "./app/admin/dataMaster/dosen/KelolaAkunDosen";
+import KelolaAkunMhs from "./app/admin/dataMaster/mhs/KelolaAkunMhs";
 
 export default function App() {
   const ProtectedMhsDashboard = withRole(DashboardMhs, ["mahasiswa"]);
@@ -68,6 +74,14 @@ export default function App() {
                 </ProtectRoute>
               }
             />
+             <Route path="/admin/listMhsKonsul" element={<ListKonsul />} />
+              <Route path="/admin/listPendaftarTA" element={<ListTA />} />
+             <Route path="/admin/data/dataMhs" element={<DataMhs />} />
+             <Route path="/admin/data/dataDosen" element={<DataDosen />} />
+             <Route path="/admin/data/dataDosen/tambahAkun" element={<KelolaAkunDosen />} />
+             <Route path="/admin/data/dataMhs/tambahAkun" element={<KelolaAkunMhs />} />
+             <Route path="/admin/data/dataMhs/editAkun/:id" element={<KelolaAkunMhs />} />
+             <Route path="/admin/data/dataDosen/editAkun/:id" element={<KelolaAkunDosen />} />
 
             {/* Dosen */}
             {/* Tambahkan rute dosen di sini jika diperlukan */}

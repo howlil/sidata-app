@@ -5,7 +5,7 @@ import logo from "/public/logosidata.svg";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
-import ubahPassword from "@/apis/api/ubahPassword";
+import ubahPassword from "@/apis/auth/ubahPassword";
 
 export default function UbahSandi() {
   const [email, setEmail] = useState("");

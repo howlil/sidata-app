@@ -1,4 +1,4 @@
-const Button = ({ children, variant, ...props }) => {
+export default function Button({ children, variant , custom = '', onClick }) {
   const variantClasses = {
     primary: "bg-ijau-100 text-neutral-900 text-base text-neutral-800 font-normal active:scale-105 ts",
     secondary: "bg-gray-500 text-white hover:bg-gray-700",
@@ -10,10 +10,9 @@ const Button = ({ children, variant, ...props }) => {
   }`;
 
   return (
-    <button className={buttonClasses} {...props}>
+    <button onClick={onClick} className={`${buttonClasses} ${custom}`}>
       {children}
     </button>
   );
 };
 
-export default Button;

@@ -1,10 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {ajukanJadwalBimbingan,getAllJadwalBimbingan} = require('../../controllers/mhs/bimbinganDosenController')
-const {authenticateToken,authorizeRole} = require('../../middlewares/auth')
+import { ajukanJadwalBimbingan, getAllJadwalBimbingan } from '../../controllers/mhs/bimbinganDosenController.js';
+import { authenticateToken, authorizeRole } from '../../middlewares/auth.js';
 
+router.post('/ajukanBimbinganTA', authorizeRole('mahasiswa'), authenticateToken, ajukanJadwalBimbingan);
+router.post('/getJadwalBimbinganTA', authorizeRole('mahasiswa'), authenticateToken, getAllJadwalBimbingan);
 
-router.post('/ajukanBimbinganTA',authorizeRole('mahasiswa'),authenticateToken,ajukanJadwalBimbingan )
-router.post('/getJadwalBimbinganTA',authorizeRole('mahasiswa'),authenticateToken,getAllJadwalBimbingan )
-
-module.exports = router;
+export default router;

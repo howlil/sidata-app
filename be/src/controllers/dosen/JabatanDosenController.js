@@ -1,11 +1,11 @@
-const yup = require("yup");
-const prisma = require("../../config/db");
+import prisma from '../../config/db.js';
+import * as yup from 'yup';
 
 const jabatanSchema = yup.object().shape({
   namaJabatan: yup.string().required("Nama Jabatan is required"),
 });
 
-exports.createJabatan = async (req, res) => {
+export const createJabatan = async (req, res) => {
     try {
       const { namaJabatan } = req.body;
   
@@ -30,7 +30,7 @@ exports.createJabatan = async (req, res) => {
     }
   };
   
-  exports.getAllJabatan = async (req, res) => {
+  export const getAllJabatan = async (req, res) => {
     try {
       const jabatan = await prisma.jabatan.findMany();
       res.status(200).json({ success: true, data: jabatan });
@@ -39,7 +39,7 @@ exports.createJabatan = async (req, res) => {
     }
   };
   
-  exports.getJabatanById = async (req, res) => {
+  export const getJabatanById = async (req, res) => {
     try {
       const { id } = req.params;
   
@@ -57,7 +57,7 @@ exports.createJabatan = async (req, res) => {
     }
   };
   
-  exports.updateJabatan = async (req, res) => {
+  export const updateJabatan = async (req, res) => {
     try {
       const { id } = req.params;
       const { namaJabatan } = req.body;
@@ -82,7 +82,7 @@ exports.createJabatan = async (req, res) => {
     }
   };
   
-  exports.deleteJabatan = async (req, res) => {
+  export const deleteJabatan = async (req, res) => {
     try {
       const { id } = req.params;
   

@@ -32,19 +32,20 @@ export const dataAdmin = [
     icon: "LayoutDashboard",
   },
   {
-    label: "Manajemen User",
-    href: "/admin/manajemenUser",
-    icon: "LayoutDashboard",
+    label: " List Konsul",
+    href: "/admin/listMhsKonsul",
+    icon: "Speech",
+  },
+
+  {
+    label: " List Pendaftar TA",
+    href: "/admin/listPendaftarTA",
+    icon: "ListTree",
   },
   {
     label: "Data Master",
-    href: "/admin/",
-    icon: "LayoutDashboard",
-  },
-  {
-    label: "List Pendaftaran TA",
-    href: "/admin/pendaftaranTA",
-    icon: "LayoutDashboard",
+    href: "#",
+    icon: "Database",
   },
 ];
 export const dataDosen = [

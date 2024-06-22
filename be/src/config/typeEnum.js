@@ -1,16 +1,16 @@
-exports.status ={
+export const status ={
     ditolak : "ditolak",
     diproses : "diproses",
     disetujui : "disetujui"
 }
 
-exports.statusTA ={
+export const statusTA ={
     ide : "ide",
     judul : "judul",
     proposal : "proposal"
 }
 
-exports.tipeDosen ={
+export const tipeDosen ={
     utama : "utama",
     asisten : "asisten"
 }

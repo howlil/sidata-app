@@ -1,14 +1,14 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const profile = require("../../controllers/auth/profileController");
-const auth = require("../../middlewares/auth");
+import {uploadFoto,editUserProfile,getUserById} from "../../controllers/auth/profileController.js";
+import {authenticateToken} from "../../middlewares/auth.js";
 
-router.get("/infoAkun", auth.authenticateToken, profile.getUserById);
+router.get("/infoAkun", authenticateToken,getUserById);
 router.put(
   "/editProfil",
-  auth.authenticateToken,
-  profile.uploadFoto,
-  profile.editUserProfile
+  authenticateToken,
+  uploadFoto,
+  editUserProfile
 );
 
-module.exports = router;
+export default router;
