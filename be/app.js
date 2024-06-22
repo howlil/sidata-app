@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 var app = express();
 
 const corsOptions = {
-  origin: ' http://localhost:5173', 
+  origin: '*', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
