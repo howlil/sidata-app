@@ -9,6 +9,7 @@ import jabatan from "./dosen/JabatanRoute.js";
 import vectorize from "./mhs/vectoreRoute.js";
 import genertePdf from "./admin/GenerateDocRoute.js";
 import konsulProdi from './mhs/KonsultasiProdiRoute.js'
+import dashboard from './dashboard/dashboardRoute.js'
 
 const server = {
   auth,
@@ -20,6 +21,7 @@ const server = {
   vectorize,
   konsulProdi,
   jabatan,
+  dashboard,
   genertePdf,
 };
 

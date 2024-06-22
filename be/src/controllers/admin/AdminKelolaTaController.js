@@ -1,6 +1,6 @@
-import prisma from ("../../config/db");
-import { status, statusTA } from ("../../config/typeEnum");
-import * as yup from ("yup");
+import prisma from "../../config/db.js";
+import { status, statusTA } from '../../config/typeEnum.js';
+ import * as yup from "yup";
 
 const accDaftarTASchema = yup.object().shape({
     idDaftarTA: yup.string().required("ID Daftar TA wajib diisi"),
@@ -13,31 +13,39 @@ export const accDaftarTA = async (req, res) => {
 
         const { idDaftarTA, isApproved } = req.body;
 
-        const existingDaftarTA = await prisma.daftarTA.findUnique({ where: { idDaftarTA } });
+        const existingDaftarTA = await prisma.daftarTA.findUnique({ where: {daftarTAId: idDaftarTA } });
         if (!existingDaftarTA) {
             return res.status(404).json({ success: false, message: "Pendaftaran TA tidak ditemukan" });
         }
 
         const updatedDaftarTA = await prisma.daftarTA.update({
-            where: { idDaftarTA },
+            where: { daftarTAId: idDaftarTA},
             data: {
-                status: isApproved ? status.diterima : status.ditolak,
+                status: isApproved ? status.disetujui : status.ditolak,
             },
         });
 
-        if (isApproved) {
-            // Update status TA to proposal
+        if (isApproved === status.disetujui && existingDaftarTA.statusTA === statusTA.judul) {
             await prisma.tA.update({
                 where: { idTA: existingDaftarTA.idTA },
                 data: {
                     statusTA: statusTA.proposal,
+                    status: status.disetujui,
+                },
+            });
+        }else{
+            await prisma.tA.update({
+                where: { idTA: existingDaftarTA.idTA },
+                data: {
+                    statusTA: statusTA.judul,
+                    status: status.ditolak,
                 },
             });
         }
 
         res.status(200).json({
             success: true,
-            message: `Pendaftaran TA ${isApproved ? "disetujui" : "ditolak"} oleh admin`,
+            message: `Pendaftaran TA berhasil`,
             data: updatedDaftarTA,
         });
     } catch (error) {

@@ -39,10 +39,12 @@ app.use("/", server.konsultasiKaprodi);
 app.use("/", server.vectorize);
 app.use("/", server.genertePdf);
 app.use("/", server.konsulProdi);
+app.use("/", server.dashboard);
 
 
 app.use("/fotoUser", express.static("public/images/profile"));
 app.use("/pdf", express.static("public/images/filePdf"));
+
 
 app.use((req, res, next) => {
   console.log(req.body);
