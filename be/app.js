@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 var app = express();
 
 const corsOptions = {
-  origin: ' http://localhost:5173', 
+  origin: ' *', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
@@ -96,11 +96,16 @@ app.use((err, req, res, next) => {
     error: err.message,
   });
 });
-// 404 handler
+// Enhanced 404 handler
 app.use((req, res, next) => {
-  res.status(404).send('Not Found');
+  res.status(404).json({
+    status: 'error',
+    message: 'Not Found',
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
 });
-
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

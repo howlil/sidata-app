@@ -306,7 +306,7 @@ export const getJadwalBimbinganByMahasiswa = async (req, res) => {
   try {
     const jadwalBimbingan = await prisma.jadwalBimbinganDosen.findMany({
       where: {
-        mahasiswaId: idMahasiswa,
+         idMahasiswa,
       },
       include: {
         Mahasiswa: true,
@@ -378,12 +378,12 @@ export const getJadwalBimbinganByMahasiswaAndDosen = async (req, res) => {
 };
 
 export const getJadwalBimbinganById = async (req, res) => {
-  const { idJadwal } = req.params;
+  const { id } = req.params;
 
   try {
     const jadwalBimbingan = await prisma.jadwalBimbinganDosen.findUnique({
       where: {
-        id: idJadwal,
+        id
       },
       include: {
         Mahasiswa: true,

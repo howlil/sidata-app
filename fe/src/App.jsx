@@ -13,22 +13,28 @@ import NotFound from "./NotFound";
 import { ActiveRouteProvider } from "./utils/ActiveRouteContex";
 import { ProtectRoute, withRole } from "./utils/ProtectRoute";
 import InfoProfile from "./components/section/InfoProfile";
-import PendaftaranTA from "./app/mahasiswa/pendaftaranTA";
-import PengajuanTA from "./app/mahasiswa/pengajuanTA";
-import Dokumen from "./app/mahasiswa/Dokumen";
-import BimbingaTA from "./app/mahasiswa/bimbinganTA";
-import ListKonsul from "./app/admin/konsul";
-import DataDosen from "./app/admin/dataMaster/dosen";
-import DataMhs from "./app/admin/dataMaster/mhs";
-import ListTA from "./app/admin/TA";
+import PendaftaranTA from "./app/mahasiswa/pendaftaranTA/index";
+import PengajuanTA from "./app/mahasiswa/pengajuanTA/index";
+import Dokumen from "./app/mahasiswa/Dokumen/index";
+import BimbingaTA from "./app/mahasiswa/bimbinganTA/index";
+import ListKonsul from "./app/admin/konsul/index";
+import DataDosen from "./app/admin/dataMaster/dosen/index";
+import DataMhs from "./app/admin/dataMaster/mhs/index";
+import ListTA from "./app/admin/TA/index";
 import KelolaAkunDosen from "./app/admin/dataMaster/dosen/KelolaAkunDosen";
 import KelolaAkunMhs from "./app/admin/dataMaster/mhs/KelolaAkunMhs";
-import KonsultasiKaprodi from "./app/mahasiswa/konsultasi";
-import ChatBot from "./app/mahasiswa/chatBot";
-import Dashboard from "./app/dosen/dashboard";
-import HandleTA from "./app/dosen/TA";
-import BimbinganTA from "./app/dosen/bimbingan";
+import ChatBot from "./app/mahasiswa/chatBot/index";
+import Dashboard from "./app/dosen/dashboard/index";
+import BimbinganTA from "./app/dosen/bimbingan/index";
 import DospemKelolaTA from "./app/dosen/TA/DospemKelolaTA";
+import AjukanBimbingan from "./app/mahasiswa/bimbinganTA/AjukanBimbingan";
+import DetailBimbingan from "./app/mahasiswa/bimbinganTA/DetailBimbingan";
+import AjukanKonsultasi from "./app/mahasiswa/konsultasi/AjukanKonsultasi";
+import DetailKonsultasi from "./app/mahasiswa/konsultasi/DetailKonsultasi";
+import DetailBimbinganMhs from "./app/dosen/bimbingan/DetailBimbinganMhs";
+import HandleTA from "./app/dosen/TA/index";
+import DetailKonsulMhs from "./app/admin/konsul/DetailKonsulMhs";
+import DetailTAMhs from "./app/admin/TA/DetailTAMhs";
 
 export default function App() {
   const ProtectedMhsDashboard = withRole(DashboardMhs, ["mahasiswa"]);
@@ -69,8 +75,14 @@ export default function App() {
             <Route path="/mhs/pendaftaranTA" element={<PendaftaranTA />} />
             <Route path="/mhs/pengajuanTA" element={<PengajuanTA />} />
             <Route path="/mhs/dokumen" element={<Dokumen />} />
-            <Route path="/mhs/ajukanJadwalKonsultasi" element={<KonsultasiKaprodi />} />
+
+            <Route path="/mhs/ajukanJadwalKonsultasi" element={<AjukanKonsultasi />} />
+            <Route path="/mhs/ajukanJadwalKonsultasi/:id" element={<DetailKonsultasi />} />
+
+
             <Route path="/mhs/bimbinganTA" element={<BimbingaTA />} />
+            <Route path="/mhs/bimbinganTA/ajukan" element={<AjukanBimbingan />} />
+            <Route path="/mhs/bimbinganTA/:id" element={<DetailBimbingan />} />
             <Route path="/sidatabot" element={<ChatBot />} />
             
             {/* Admin */}
@@ -82,8 +94,11 @@ export default function App() {
                 </ProtectRoute>
               }
             />
+            <Route path="/admin/listMhsKonsul/:id" element={<DetailKonsulMhs />} />
              <Route path="/admin/listMhsKonsul" element={<ListKonsul />} />
               <Route path="/admin/listPendaftarTA" element={<ListTA />} />
+              <Route path="/admin/listPendaftarTA/:id" element={<DetailTAMhs />} />
+              
              <Route path="/admin/data/dataMhs" element={<DataMhs />} />
              <Route path="/admin/data/dataDosen" element={<DataDosen />} />
              <Route path="/admin/data/dataDosen/tambahAkun" element={<KelolaAkunDosen />} />
@@ -91,11 +106,14 @@ export default function App() {
              <Route path="/admin/data/dataMhs/editAkun/:id" element={<KelolaAkunMhs />} />
              <Route path="/admin/data/dataDosen/editAkun/:id" element={<KelolaAkunDosen />} />
 
+
             {/* Dosen */}
              <Route path="/dosen/dashboard" element={<Dashboard />} />
              <Route path="/dosen/kelolaTaMahasiswa" element={<HandleTA />} />
-             <Route path="/dosen/bimbinganMahasiswa" element={<BimbinganTA />} />
              <Route path="/dosen/detailTA/:id" element={<DospemKelolaTA />} />
+             <Route path="/dosen/bimbinganMahasiswa" element={<BimbinganTA />} />
+             <Route path="/dosen/bimbinganMahasiswa/:id" element={<DetailBimbinganMhs />} />
+
             {/* Tambahkan rute dosen di sini jika diperlukan */}
           </Routes>
         </ActiveRouteProvider>

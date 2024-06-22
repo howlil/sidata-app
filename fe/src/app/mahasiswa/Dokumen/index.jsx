@@ -2,6 +2,7 @@ import Layout from "@/components/other/layout";
 import Tables from "@/components/ui/Table";
 import generateDoc from "@/apis/mhs/doc/generateDoc";
 import { useEffect, useState } from "react";
+import Toast from "@/components/ui/Toast";
 import { getDataFromToken } from "@/utils/getDataToken";
 import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
 
@@ -9,12 +10,16 @@ export default function Dokumen() {
   const id = getDataFromToken()?.userId;
   const [data, setData] = useState(null);
   const [idTA, setTa] = useState(null);
+  const [status, setStatus] = useState({ status: "", statusTA: "" });
+  const [toastMessage, setToastMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const fetchData = async () => {
     try {
       if (idTA) {
         const response = await generateDoc(idTA);
-        const blob = new Blob([response], { type: 'application/pdf' });
+        const blob = new Blob([response], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
         setData(url);
       }
@@ -26,7 +31,15 @@ export default function Dokumen() {
   const getTa = async () => {
     try {
       const response = await getTAdetailByIdMahasiswa(id);
-      setTa(response.data?.idTA);
+      if (response.success) {
+        setTa(response.data?.idTA);
+        setStatus({
+          status: response.data.status,
+          statusTA: response.data.statusTA,
+        });
+      } else {
+        console.error(response.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -40,11 +53,20 @@ export default function Dokumen() {
     fetchData();
   }, [idTA]);
 
+  const eligible = status.status === "disetujui" && status.statusTA === "judul";
+
   const handleDownload = () => {
+    if (!eligible) {
+      setToastMessage("Pastikan Anda sudah mendapatkan persetujuan judul TA");
+      setIsSuccess(false);
+      setIsToastVisible(true);
+      return;
+    }
+
     if (data) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = data;
-      link.download = 'document.pdf';
+      link.download = "document.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -54,7 +76,7 @@ export default function Dokumen() {
   const columns = [
     {
       header: "Nama Dokumen",
-      accessor: "no",
+      accessor: "nama_dokumen",
     },
   ];
 
@@ -62,21 +84,25 @@ export default function Dokumen() {
     <Layout>
       <h1 className="font-bold text-2xl">Dokumen Keperluan TA</h1>
       <section className="mt-8">
-        <Tables columns={columns} data={[]} />
-        {data && (
-          <div>
-            <iframe
-              src={data}
-              width="100%"
-              height="600px"
-              title="Dokumen Keperluan TA"
-            />
-            <button onClick={handleDownload} className="mt-4 p-2 bg-blue-500 text-white rounded">
-              Download PDF
-            </button>
-          </div>
-        )}
+        <Tables
+          columns={columns}
+          del="hidden"
+          edit="hidden"
+          show="hidden"
+          onDown={handleDownload}
+          data={[
+            {
+              nama_dokumen: "Persetujuan Pembimbing TA",
+            },
+          ]}
+        />
       </section>
+      <Toast
+        message={toastMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+        isSuccess={isSuccess}
+      />
     </Layout>
   );
 }

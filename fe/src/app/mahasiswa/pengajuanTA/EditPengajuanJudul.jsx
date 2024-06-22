@@ -1,13 +1,13 @@
 import Button from "@/components/ui/Button";
 import TextArea from "@/components/ui/TextArea";
-import ajukanJudul from "@/apis/mhs/TA/ajukanJudul";
 import Input from "@/components/ui/Input";
 import { getDataFromToken } from "@/utils/getDataToken";
 import { useState, useEffect } from "react";
 import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
 import getBidangById from "@/apis/dosen/bidang/getBidangbyId";
+import editJudul from "@/apis/mhs/TA/editJudul";
 
-export default function PengajuanJudul() {
+export default function EditPengajuanJudul() {
   const id = getDataFromToken()?.userId;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -3,22 +3,24 @@ import Tables from '@/components/ui/Table'
 
 export default function ListTA() {
   const columns = [
+
     {
-      Header: "No",
-      accessor: "no",
-    },
-    {
-      Header: "Nama",
+      header: "Nama",
       accessor: "nama",
     },
     {
-      Header: "NIDN",
+      header: "NIM",
       accessor: "nidn",
     },
     {
-      Header: "Action",
-      accessor: "action",
+      header: "Bidang",
+      accessor: "nidn",
     },
+    {
+      header: "Status",
+      accessor: "nidn",
+    },
+
   ]
   return (
     <Layout>

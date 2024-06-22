@@ -90,6 +90,7 @@ export default function DospemKelolaTA() {
           value={taDetail.Mahasiswa.nama}
           readOnly
         />
+
         <Input label="NIM" value={taDetail.Mahasiswa.nim} readOnly />
         <Input label="Bidang" value={taDetail.Bidang.namaBidang} readOnly />
         <TextArea label="Ide Tugas Akhir" value={taDetail.ideTA} readOnly />

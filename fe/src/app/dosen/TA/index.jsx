@@ -10,13 +10,12 @@ export default function HandleTA() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const id = getDataFromToken()?.userId;
+  const id = getDataFromToken()?.userId
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllTAMahasiswaByDosPemId(id);
-         console.log(response);
         if (response.success) {
           setData(response.data);
         } else {
@@ -65,7 +64,7 @@ export default function HandleTA() {
         ) : error ? (
           <p>Error: {error}</p>
         ) : (
-          <Tables columns={columns} data={data} del="hidden" onEdit={(row)=>handleEdit(row)} />
+          <Tables columns={columns} data={data} del="hidden" down={"hidden"} show={"hidden"} onEdit={(row)=>handleEdit(row)} />
         )}
       </section>
     </Layout>

@@ -5,6 +5,8 @@ import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
 import { getDataFromToken } from "@/utils/getDataToken";
 import EditPengajuanIde from "./EditPengajuanIde";
 import PengajuanJudul from "./PengajuanJudul";
+import EditPengajuanJudul from "./EditPengajuanJudul";
+import Riwayat from "./Riwayat";
 
 export default function PengajuanTA() {
   const id = getDataFromToken()?.userId;
@@ -46,7 +48,14 @@ console.log(status)
       {status.statusTA === "belumAda" && status.status === "ditolak" && (
        <EditPengajuanIde />
       )}
-      {status.statusTA === "ide" && status.status === "disetujui" || <PengajuanJudul />}
+      {status.statusTA === "ide" && status.status === "disetujui" && <PengajuanJudul />}
+      {status.statusTA === "ide" && status.status === "diproses" && (
+        <p>proses</p>
+      )}
+      {status.statusTA === "ide" && status.status === "ditolak"  && <EditPengajuanJudul />}
+      {status.statusTA === "judul" && status.status === "disetujui" && (
+        <Riwayat />
+      )}
 
 
     </Layout>

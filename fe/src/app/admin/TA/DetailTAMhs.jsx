@@ -1,5 +1,5 @@
 import Layout from "@/components/other/layout"
-export default function KonsultasiKaprodi() {
+export default function DetailTAMhs() {
   return (
     <Layout>
       

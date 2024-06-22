@@ -1,9 +1,9 @@
-import { Trash, Edit } from "lucide-react";
+import { Trash, Edit,Eye ,ArrowDownToLine} from "lucide-react";
 const getNestedProperty = (obj, path) => {
   return path.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : undefined, obj);
 }
 
-const Tables = ({ columns, data, onEdit, onDelete,edit,del }) => {
+const Tables = ({ columns, data, onEdit, onDelete,edit,del,show,onShowm,down,onDown }) => {
   
   return (
     <table className="w-full  ">
@@ -28,6 +28,12 @@ const Tables = ({ columns, data, onEdit, onDelete,edit,del }) => {
                   <Edit size={20} className="mr-2 mt-1" color="orange" />
               
             </div>
+              <div onClick={() => onShow(row)} className={`${show} cursor-pointer ts active:scale-110 hover:scale-110`}>
+                 <Eye size={20} className="mr-2 mt-1" color="gray" />
+              </div>
+              <div onClick={() => onDown(row)} className={`${down} cursor-pointer ts active:scale-110 hover:scale-110`}>
+                 <ArrowDownToLine size={20} className="mr-2 mt-1" color="green" />
+              </div>
               <div onClick={() => onDelete(row)} className={`${del} cursor-pointer ts active:scale-110 hover:scale-110`}>
                  <Trash size={20} className="mr-2 mt-1" color="red" />
               </div>

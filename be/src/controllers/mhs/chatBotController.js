@@ -158,7 +158,6 @@ export const getChatMessages = async (req, res) => {
     res.status(500).json({ error: "Terjadi kesalahan saat mengambil pesan" });
   }
 };
-
 export const deleteChatMessages = async (req, res) => {
   try {
     const { idMahasiswa } = req.params;
@@ -182,17 +181,19 @@ export const deleteChatMessages = async (req, res) => {
 
 export const addChatMessage = async (req, res) => {
   try {
-    const { idMahasiswa, text, role } = req.body;
+    const { idMahasiswa, text,role} = req.body;
 
+    console.log(idMahasiswa,text,role);
     if (!idMahasiswa || !text || !role) {
       return res.status(400).json({ error: "idMahasiswa, text, dan role diperlukan" });
     }
+    const isUserMessage = role === "user";
 
     await prisma.message.create({
       data: {
         idMahasiswa,
         text,
-        isUserMessage: role === "bot",
+        isUserMessage,
         timestamp: new Date(),
       },
     });

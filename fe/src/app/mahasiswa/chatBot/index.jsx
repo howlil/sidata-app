@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/other/layout";
 import InputPesan from "@/components/ui/InputPesan";
 import { getDataFromToken } from "@/utils/getDataToken";
 import { CircleUserRound } from "lucide-react";
+import simpanPesan from "@/apis/mhs/bot/simpanPesan";
+import getPesan from "@/apis/mhs/bot/tampilkanPesan";
 
 export default function ChatBot() {
   const userID = getDataFromToken()?.userId;
@@ -11,10 +13,32 @@ export default function ChatBot() {
     { role: "bot", content: "Halo, ada yang bisa saya bantu?" },
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [partialMessage, setPartialMessage] = useState(""); // State for holding partial message
+  const [partialMessage, setPartialMessage] = useState("");
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await getPesan(userID);
+        const fetchedMessages = response.messages.map((message) => ({
+          role: message.isUserMessage ? "user" : "bot",
+          content: message.text,
+        }));
+        setMessages((prevMessages) => {
+          const initialMessage = [{ role: "bot", content: "Halo, ada yang bisa saya bantu?" }];
+          return [...initialMessage, ...fetchedMessages];
+        });
+      } catch (error) {
+        console.error("Error fetching messages: ", error);
+      }
+    };
+
+    if (userID) {
+      fetchMessages();
+    }
+  }, [userID]);
+
 
   const handleSendMessage = async (message) => {
-    const idMahasiswa = userID;
     const role = "user";
 
     setMessages((prevMessages) => [
@@ -24,7 +48,7 @@ export default function ChatBot() {
     setIsTyping(true);
 
     try {
-      await sendMessageAndStreamResponse(idMahasiswa, message, role);
+      await sendMessageAndStreamResponse(userID, message, role);
     } catch (error) {
       console.error("Error sending message: ", error);
       setIsTyping(false);
@@ -68,7 +92,7 @@ export default function ChatBot() {
         if (previousValue !== receivedValue) {
           previousValue = receivedValue;
 
-          setPartialMessage(receivedValue); // Update the partial message
+          setPartialMessage(receivedValue);
 
           setMessages((prev) => {
             const updatedMessages = [...prev];
@@ -82,6 +106,8 @@ export default function ChatBot() {
 
             return updatedMessages;
           });
+
+          await simpanPesan(idMahasiswa, receivedValue, "bot");
         }
       }
       setIsTyping(false);
