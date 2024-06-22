@@ -8,6 +8,7 @@ const accDaftarTASchema = yup.object().shape({
 });
 
 export const accDaftarTA = async (req, res) => {
+export const accDaftarTA = async (req, res) => {
     try {
         await accDaftarTASchema.validate(req.body);
 
