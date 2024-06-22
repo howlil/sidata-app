@@ -36,7 +36,6 @@ export const generatePDF = async (req, res) => {
       return res.status(400).json({ message: 'Data pembimbing tidak lengkap' });
     }
 
-    // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]); // A4 size in points
 

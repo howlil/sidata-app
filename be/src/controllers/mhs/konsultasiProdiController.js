@@ -63,7 +63,6 @@ const ajukanJadwalKonsulProdiSchema = yup.object().shape({
 });
 
 
-
 export const ajukanJadwalKonsulProdi = async (req, res) => {
   try {
     await ajukanJadwalKonsulProdiSchema.validate(req.body);
@@ -142,6 +141,38 @@ export const ajukanJadwalKonsulProdi = async (req, res) => {
   }
 };
 
+export const getDetailPengajuanJadwalKonsultasi = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const detailPengajuanJadwalKonsultasi = await prisma.jadwalKonsulProdi.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        Mahasiswa: true,
+        Admin: true,
+      },
+    });
+
+    if (!detailPengajuanJadwalKonsultasi) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengajuan jadwal konsultasi tidak ditemukan",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: detailPengajuanJadwalKonsultasi,
+    });
+  } catch (error) {
+    console.error("Error retrieving consultation schedule detail:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};
 
 export const getAllJadwalKonsulProdi = async (req, res) => {
   try {
@@ -241,3 +272,4 @@ export const updateStatusJadwalKonsulProdi = async (req, res) => {
     res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+

@@ -61,3 +61,54 @@ export const accDaftarTA = async (req, res) => {
         });
     }
 };
+
+export const getAllDaftarTA = async (req, res) => {
+    try {
+        const allDaftarTA = await prisma.daftarTA.findMany();
+        if (!allDaftarTA) {
+            return res.status(404).json({ success: false, message: "Pendaftaran TA tidak ditemukan" });
+        }
+        if (allDaftarTA.length === 0) {
+            return res.status(404).json({ success: false, message: "Belum ada pendaftaran TA" });
+        }
+        res.status(200).json({
+            success: true,
+            data: allDaftarTA,
+        });
+    } catch (error) {
+        console.error("Error retrieving all Daftar TA:", error);
+        res.status(500).json({
+            success: false,
+            message: "Kesalahan server: " + error.message,
+        });
+    }
+};
+
+export const getDetailDaftarTAByMhsiswa = async (req, res) => {
+    try {
+        const { idMhsiswa } = req.params;
+
+        const detailDaftarTA = await prisma.daftarTA.findUnique({
+            where: { idMhsiswa },
+            include: {
+                tA: true,
+                mahasiswa: true,
+            },
+        });
+
+        if (!detailDaftarTA) {
+            return res.status(404).json({ success: false, message: "Detail pendaftaran TA tidak ditemukan" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: detailDaftarTA,
+        });
+    } catch (error) {
+        console.error("Error retrieving detail Daftar TA by Mahasiswa:", error);
+        res.status(500).json({
+            success: false,
+            message: "Kesalahan server: " + error.message,
+        });
+    }
+};

@@ -127,3 +127,57 @@ export const getJumlahTAterdaftar = async (req, res) => {
         });
     }
 }
+export const getJumlahBimbinganByMahasiswa = async (req, res) => {
+  const { idMahasiswa } = req.params;
+
+  try {
+    const jumlahBimbingan = await prisma.jadwalBimbinganDosen.count({
+      where: {
+        mahasiswaId: idMahasiswa,
+      },
+    });
+    if (jumlahBimbingan === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Tidak ada jadwal bimbingan yang ditemukan",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: jumlahBimbingan,
+    });
+  } catch (error) {
+    console.error("Error retrieving jumlah bimbingan:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};
+export const getJumlahBimbinganByDosen = async (req, res) => {
+  const { idDosen } = req.params;
+
+  try {
+    const jumlahBimbingan = await prisma.jadwalBimbinganDosen.count({
+      where: {
+        dosenId: idDosen,
+      },
+    });
+    if (jumlahBimbingan === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Tidak ada jadwal bimbingan yang ditemukan",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: jumlahBimbingan,
+    });
+  } catch (error) {
+    console.error("Error retrieving jumlah bimbingan:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};

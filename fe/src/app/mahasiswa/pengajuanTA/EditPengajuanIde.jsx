@@ -175,7 +175,7 @@ useEffect(() => {
         (pembimbing) => pembimbing.Dosen.idDosen === uniqueDosenIds[0]
       );
       return [
-        { idDosen: singleDosen.id, jabatanId: singleDosen.Dosen.jabatanId },
+        { id: singleDosen.id,  },
       ];
     } else if (uniqueDosenIds.length === 2) {
       const dosenMatch = pembimbingData.find(

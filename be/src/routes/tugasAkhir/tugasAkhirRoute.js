@@ -15,7 +15,7 @@ import {
   accIdeTA,
   accJudulTA,
 } from "../../controllers/dosen/DosenKelolaTAController.js";
-import { accDaftarTA } from "../../controllers/admin/AdminKelolaTaController.js";
+import { accDaftarTA ,getAllDaftarTA,getDetailDaftarTAByMhsiswa} from "../../controllers/admin/AdminKelolaTaController.js";
 
 router.post(
   "/ajukanIdeTA",
@@ -26,6 +26,7 @@ router.post(
 router.put(
   "/editAjukanIdeTA/:id",
   authenticateToken,
+  authorizeRole("mahasiswa"),
   editAjukanIdeTA
 );
 router.put(
@@ -43,6 +44,7 @@ router.put(
 router.post(
   "/daftarTA",
   authenticateToken,
+  authorizeRole("mahasiswa"),
   upload,
   daftarTA
 );
@@ -59,18 +61,36 @@ router.get(
   getTAdetailByIdMahasiswa
 );
 
-router.put("/accIdeTA", authenticateToken, accIdeTA);
+router.put("/accIdeTA", 
+  authorizeRole("dosen"),
+  authenticateToken, 
+  accIdeTA);
 
 router.put(
   "/accJudulTA",
+  authorizeRole("dosen"),
   authenticateToken,
   accJudulTA
 );
 
 router.put(
   "/accDaftarTA",
+  authorizeRole("admin"),
   authenticateToken,
   accDaftarTA
+);
+
+router.get(
+  "/getAllDaftarTA",
+  authenticateToken,
+  authorizeRole("admin"),
+  getAllDaftarTA
+);
+router.get(
+  "/getDetailDaftarTAByMhsiswa/:idMhsiswa",
+  authenticateToken,
+  authorizeRole("admin"),
+  getDetailDaftarTAByMhsiswa
 );
 
 export default router;
