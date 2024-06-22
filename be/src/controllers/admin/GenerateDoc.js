@@ -59,8 +59,14 @@ export const generatePDF = async (req, res) => {
     page.setFont(font);
     page.setFontSize(12);
 
-    console.log('Mahasiswa:', pembimbing1);
+    const titleText = "SURAT PERSETUJUAN SIDANG TUGAS AKHIR";
+    const titleWidth = font.widthOfTextAtSize(titleText, 12);
+    const titleX = (page.getWidth() - titleWidth) / 2;
+    const titleY = 650;
+    page.drawText(titleText, { x: titleX, y: titleY });
+
     const content = `
+
 
       Kami pembimbing tugas akhir:
                                 1. ${pembimbing1.DosenPembimbing.Dosen.nama}  
