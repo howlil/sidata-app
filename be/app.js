@@ -20,7 +20,7 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 204
 };
-
+const port = process.env.PORT || 8080;
 const dbUrl = process.env.DATABASE_URL;
 const accessSecretKey = process.env.ACCESS_SECRET_KEY;
 const openaiApiKey = process.env.OPENAI_API_KEY;
