@@ -4,17 +4,16 @@ WORKDIR /usr/src/app
 
 RUN npm i -g pnpm
 
-
 COPY package*.json .
+COPY pnpm-lock.yaml .
 
 RUN pnpm install
 
-RUN pnpm add @prisma/cli
+RUN pnpm add prisma --save-dev
 
 COPY . .
 
-RUN pnpm dlx prisma generate
-
+RUN pnpx prisma generate
 
 EXPOSE 8080
 
