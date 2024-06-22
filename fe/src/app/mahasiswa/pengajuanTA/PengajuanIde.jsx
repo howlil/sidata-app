@@ -149,7 +149,7 @@ export default function PengajuanIde() {
         (pembimbing) => pembimbing.Dosen.idDosen === uniqueDosenIds[0]
       );
       return [
-        { idDosen: singleDosen.id, jabatanId: singleDosen.Dosen.jabatanId },
+        { id: singleDosen.id,  },
       ];
     } else if (uniqueDosenIds.length === 2) {
       const dosenMatch = pembimbingData.find(
@@ -199,6 +199,7 @@ export default function PengajuanIde() {
 
     const selectedDosenData = dosenOptions.filter((dosen) =>selectedDosen.includes(dosen.value));
     const pembimbingList = await determinePembimbingType(selectedDosenData);
+    console.log(pembimbingList);
 
     try {
       const response = await ajukanIde({

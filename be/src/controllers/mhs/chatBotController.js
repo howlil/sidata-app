@@ -134,3 +134,72 @@ export const handleChatMessage = async (req, res) => {
     res.status(500).json({ error: "Terjadi kesalahan saat memproses pesan" });
   }
 };
+
+export const getChatMessages = async (req, res) => {
+  try {
+    const { idMahasiswa } = req.params;
+
+    if (!idMahasiswa) {
+      return res.status(400).json({ error: "idMahasiswa diperlukan" });
+    }
+
+    const messages = await prisma.message.findMany({
+      where: {
+        idMahasiswa,
+      },
+      orderBy: {
+        timestamp: 'asc',
+      },
+    });
+
+    res.status(200).json({ messages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Terjadi kesalahan saat mengambil pesan" });
+  }
+};
+
+export const deleteChatMessages = async (req, res) => {
+  try {
+    const { idMahasiswa } = req.params;
+
+    if (!idMahasiswa) {
+      return res.status(400).json({ error: "idMahasiswa diperlukan" });
+    }
+
+    await prisma.message.deleteMany({
+      where: {
+        idMahasiswa,
+      },
+    });
+
+    res.status(200).json({ message: "Pesan berhasil dihapus" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Terjadi kesalahan saat menghapus pesan" });
+  }
+};
+
+export const addChatMessage = async (req, res) => {
+  try {
+    const { idMahasiswa, text, role } = req.body;
+
+    if (!idMahasiswa || !text || !role) {
+      return res.status(400).json({ error: "idMahasiswa, text, dan role diperlukan" });
+    }
+
+    await prisma.message.create({
+      data: {
+        idMahasiswa,
+        text,
+        isUserMessage: role === "bot",
+        timestamp: new Date(),
+      },
+    });
+
+    res.status(200).json({ message: "Pesan berhasil ditambahkan" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Terjadi kesalahan saat menambahkan pesan" });
+  }
+};

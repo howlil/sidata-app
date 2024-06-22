@@ -42,6 +42,33 @@ const createDosenSchema = yup.object().shape({
     .max(2, "Maksimal dua bidang dosen"),
 });
 
+const editMahasiswaSchema = yup.object().shape({
+  nama: yup.string().optional(),
+  nim: yup.string().optional().length(10, `NIM harus 10 karakter`),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .optional()
+    .matches(/@student\.id$/, "Email harus diakhiri @student.id"),
+  alamat: yup.string().optional(),
+});
+
+const editDosenSchema = yup.object().shape({
+  nama: yup.string().optional(),
+  nip: yup.string().optional().length(18, `NIP harus 18 karakter`),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .optional()
+    .matches(/@dosen\.id$/, "Email harus diakhiri @dosen.id"),
+  jabatanId: yup.string().optional(),
+  bidangDosen: yup
+    .array()
+    .of(yup.string().required("Bidang Dosen is required"))
+    .min(1, "Minimal satu bidang dosen")
+    .max(2, "Maksimal dua bidang dosen"),
+});
+
 
 export const buatAkunMahasiswa = async (req, res) => {
   try {
@@ -316,17 +343,6 @@ export const getAllAkunDosen = async (req, res) => {
     return res.status(500).send({ message: "Error saat membuat akun", error: error.message }); 
   }
 };
-const editMahasiswaSchema = yup.object().shape({
-  nama: yup.string().optional(),
-  nim: yup.string().optional().length(10, `NIM harus 10 karakter`),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .optional()
-    .matches(/@student\.id$/, "Email harus diakhiri @student.id"),
-  alamat: yup.string().optional(),
-});
-
 
 export const editAkunMahasiswa = async (req, res) => {
   try {
@@ -401,21 +417,6 @@ export const editAkunMahasiswa = async (req, res) => {
   }
 };
 
-const editDosenSchema = yup.object().shape({
-  nama: yup.string().optional(),
-  nip: yup.string().optional().length(18, `NIP harus 18 karakter`),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .optional()
-    .matches(/@dosen\.id$/, "Email harus diakhiri @dosen.id"),
-  jabatanId: yup.string().optional(),
-  bidangDosen: yup
-    .array()
-    .of(yup.string().required("Bidang Dosen is required"))
-    .min(1, "Minimal satu bidang dosen")
-    .max(2, "Maksimal dua bidang dosen"),
-});
 
 export const editAkunDosen = async (req, res) => {
   try {

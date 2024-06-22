@@ -1,6 +1,10 @@
 import prisma from "../../config/db.js";
 import multer from "multer";
-import path from "path";
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 export const getUserById = async (req, res) => {
   try {
@@ -70,19 +74,11 @@ export const uploadFoto = multer({
 }).single("foto");
 
 export const editUserProfile = async (req, res) => {
+  
+  const id = req.user.userId;
+  const role = req.user.role.toLowerCase(); 
+  const { nama, email, alamat } = req.body;
   try {
-    console.log("File:", req.file); // Debugging file
-    console.log("Body:", req.body); // Debugging body
-    const id = req.user.userId;
-    const role = req.user.role.toLowerCase(); // Menurunkan semua karakter ke huruf kecil untuk konsistensi
-    const { nama, email, alamat, noHp } = req.body;
-    let nim_nip;
-
-    if (role === "dosen") {
-      nim_nip = req.body.nip;
-    } else {
-      nim_nip = req.body.nim;
-    }
 
     const user = await prisma[role].findUnique({ where: { id } });
     if (!user) {
@@ -96,14 +92,9 @@ export const editUserProfile = async (req, res) => {
       foto = req.file.filename;
     }
 
-    const updateData = { nama, email, alamat, noHp };
+    const updateData = { nama,email, alamat, noHp };
     if (foto) {
       updateData.foto = foto;
-    }
-    if (role === "dosen") {
-      updateData.nip = nim_nip;
-    } else {
-      updateData.nim = nim_nip;
     }
 
     const updatedUser = await prisma[role].update({

@@ -63,7 +63,6 @@ const ajukanJadwalKonsulProdiSchema = yup.object().shape({
 });
 
 
-
 export const ajukanJadwalKonsulProdi = async (req, res) => {
   try {
     await ajukanJadwalKonsulProdiSchema.validate(req.body);
@@ -142,6 +141,38 @@ export const ajukanJadwalKonsulProdi = async (req, res) => {
   }
 };
 
+export const getDetailPengajuanJadwalKonsultasi = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const detailPengajuanJadwalKonsultasi = await prisma.jadwalKonsulProdi.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        Mahasiswa: true,
+        Admin: true,
+      },
+    });
+
+    if (!detailPengajuanJadwalKonsultasi) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengajuan jadwal konsultasi tidak ditemukan",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: detailPengajuanJadwalKonsultasi,
+    });
+  } catch (error) {
+    console.error("Error retrieving consultation schedule detail:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};
 
 export const getAllJadwalKonsulProdi = async (req, res) => {
   try {
@@ -171,12 +202,12 @@ export const getAllJadwalKonsulProdi = async (req, res) => {
 };
 
 export const getRiwayatKonsulProdi = async (req, res) => {
-  const { idMahasiswa } = req.params;
+  const { id } = req.params;
 
   try {
     const riwayatKonsulProdi = await prisma.jadwalKonsulProdi.findMany({
       where: {
-        idMahasiswa,
+        idMahasiswa:id,
       },
       include: {
         Mahasiswa: true,
@@ -196,3 +227,49 @@ export const getRiwayatKonsulProdi = async (req, res) => {
       .json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
+
+export const updateStatusJadwalKonsulProdi = async (req, res) => {
+  const { id } = req.params;
+  const { status: newStatus } = req.body;
+
+  if (![status.diproses, status.disetujui, status.ditolak].includes(newStatus)) {
+    return res.status(400).json({
+      success: false,
+      message: "Status tidak valid",
+    });
+  }
+
+
+  try {
+    const existingJadwal = await prisma.jadwalKonsulProdi.findUnique({
+      where: { id },
+    });
+    
+    if (existingJadwal.status !== status.diproses) {
+      return res.status(400).json({
+        success: false,
+        message: "Status pengajuan sudah final dan tidak bisa diubah lagi",
+      });
+    }
+
+    const updatedJadwalKonsulProdi = await prisma.jadwalKonsulProdi.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: newStatus,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Pengajuan konsultasi prodi telah ${newStatus}`,
+      data: updatedJadwalKonsulProdi,
+    });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+};
+

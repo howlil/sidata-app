@@ -36,7 +36,7 @@ console.log(status)
   return (
     <Layout>
       {loading && <p>Loading...</p>}
-      {status.statusTA === "belumAda" && (
+      {status.statusTA === "" && status.status==="" && (
         <PengajuanIde />
       )}
         

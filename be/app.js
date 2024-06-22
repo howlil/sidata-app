@@ -1,5 +1,4 @@
 
-import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -52,9 +51,12 @@ app.use("/", server.konsultasiKaprodi);
 app.use("/", server.vectorize);
 app.use("/", server.genertePdf);
 app.use("/", server.konsulProdi);
+app.use("/", server.dashboard);
 
 
 app.use("/fotoUser", express.static("public/images/profile"));
+app.use("/pdf", express.static("public/images/filePdf"));
+
 
 app.use((req, res, next) => {
   console.log(req.body);
@@ -106,12 +108,15 @@ app.use((err, req, res, next) => {
     error: err.message,
   });
 });
-app.use(function (req, res, next) {
-  next(createError(404));
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).send('Not Found');
 });
 
-app.use(function (req, res, next) {
-  res.status(404).json({ message: "Not Found" });
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 export default app;
