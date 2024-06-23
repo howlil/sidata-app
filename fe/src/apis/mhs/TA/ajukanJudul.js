@@ -15,5 +15,14 @@ export default async function ajukanJudul(idTA, judulTA) {
     redirect: "follow",
   };
 
-at
+  try {
+    
+    const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/ajukanJudulTA`;
+    const response = await fetch(apiUrl, requestOptions);
+    const result = await response.json();
+    return result;
+
+  } catch (error) {
+    console.log("error", error);
+  }
 }

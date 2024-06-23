@@ -11,26 +11,25 @@ import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post(
   "/ajukanKonsultasiKaprodi",
-  authorizeRole("mahasiswa"),
   authenticateToken,
+  authorizeRole("mahasiswa"),
   ajukanJadwalKonsulProdi
 );
 router.get(
   "/getAllJadwalKonsultasi",
-  authorizeRole("mahasiswa"),
   authenticateToken,
   getAllJadwalKonsulProdi
 );
 router.get(
-  "/getRiwayatKonsultasi",
-  authorizeRole("mahasiswa"),
+  "/getRiwayatKonsultasi/:id",
   authenticateToken,
+  authorizeRole("mahasiswa"),
   getRiwayatKonsulProdi
 );
 router.put(
-  "/updateStatusKonsultasi/:idJadwal",
-  authorizeRole("admin"),
+  "/updateStatusKonsultasi/:id",
   authenticateToken,
+  authorizeRole("admin"),
   updateStatusJadwalKonsulProdi
 );
 router.get(

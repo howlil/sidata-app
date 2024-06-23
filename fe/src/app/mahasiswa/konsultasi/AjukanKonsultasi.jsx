@@ -6,9 +6,11 @@ import TextArea from "@/components/ui/TextArea";
 import Button from "@/components/ui/Button";
 import ajukanKonsultasi from "@/apis/mhs/konsutasi/ajukanKonsultasi";
 import Toast from "@/components/ui/Toast";
+import { useNavigate } from "react-router-dom";
 import { getDataFromToken } from "@/utils/getDataToken";
 
 export default function AjukanKonsultasi() {
+  const navigate = useNavigate();
   const idMahasiswa  = getDataFromToken()?.userId;
   const [kendala, setKendala] = useState("");
   const [tanggal, setTanggal] = useState("");
@@ -31,11 +33,13 @@ export default function AjukanKonsultasi() {
       waktuSelesai,
       adminId
     );
-
   
     if (result.success) {
       setToastMessage(result.message);
       setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/mhs/dashboard");
+      }, 1000);
     } else {
       setToastMessage(result.message);
       setIsSuccess(false);

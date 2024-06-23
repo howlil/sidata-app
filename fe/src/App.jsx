@@ -30,7 +30,6 @@ import DospemKelolaTA from "./app/dosen/TA/DospemKelolaTA";
 import AjukanBimbingan from "./app/mahasiswa/bimbinganTA/AjukanBimbingan";
 import DetailBimbingan from "./app/mahasiswa/bimbinganTA/DetailBimbingan";
 import AjukanKonsultasi from "./app/mahasiswa/konsultasi/AjukanKonsultasi";
-import DetailKonsultasi from "./app/mahasiswa/konsultasi/DetailKonsultasi";
 import DetailBimbinganMhs from "./app/dosen/bimbingan/DetailBimbinganMhs";
 import HandleTA from "./app/dosen/TA/index";
 import DetailKonsulMhs from "./app/admin/konsul/DetailKonsulMhs";
@@ -77,7 +76,6 @@ export default function App() {
             <Route path="/mhs/dokumen" element={<Dokumen />} />
 
             <Route path="/mhs/ajukanJadwalKonsultasi" element={<AjukanKonsultasi />} />
-            <Route path="/mhs/ajukanJadwalKonsultasi/:id" element={<DetailKonsultasi />} />
 
 
             <Route path="/mhs/bimbinganTA" element={<BimbingaTA />} />

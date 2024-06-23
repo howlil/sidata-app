@@ -31,14 +31,14 @@ router.put(
 );
 router.put(
   "/ajukanJudulTA",
-  authorizeRole("mahasiswa"),
   authenticateToken,
+  authorizeRole("mahasiswa"),
   ajukanJudulTA
 );
 router.put(
   "/editJudulTA/:id",
-  authorizeRole("mahasiswa"),
   authenticateToken,
+  authorizeRole("mahasiswa"),
   editJudulTA
 );  
 router.post(
@@ -62,34 +62,32 @@ router.get(
 );
 
 router.put("/accIdeTA", 
-  authorizeRole("dosen"),
   authenticateToken, 
+  authorizeRole("dosen"),
   accIdeTA);
 
 router.put(
   "/accJudulTA",
-  authorizeRole("dosen"),
   authenticateToken,
+  authorizeRole("dosen"),
   accJudulTA
 );
 
 router.put(
   "/accDaftarTA",
-  authorizeRole("admin"),
   authenticateToken,
+  // authorizeRole("admin"),
   accDaftarTA
 );
 
 router.get(
   "/getAllDaftarTA",
   authenticateToken,
-  authorizeRole("admin"),
   getAllDaftarTA
 );
 router.get(
-  "/getDetailDaftarTAByMhsiswa/:idMhsiswa",
+  "/getDetailDaftarTAByMhsiswa/:idMahasiswa",
   authenticateToken,
-  authorizeRole("admin"),
   getDetailDaftarTAByMhsiswa
 );
 

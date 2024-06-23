@@ -1,0 +1,35 @@
+
+export default async function accJudul(
+    idTA,
+    isApproved,
+    id
+) {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+        idTA,
+        isApproved,
+        id
+    });
+
+    const requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    try {
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/accJudulTA`;
+        const response = await fetch(apiUrl, requestOptions);
+        const result = await response.json();
+        console.log(result);    
+        return result;
+
+    } catch (error) {
+        console.log(error)
+    }
+
+}

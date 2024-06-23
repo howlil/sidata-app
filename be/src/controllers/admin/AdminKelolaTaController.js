@@ -86,10 +86,10 @@ export const getAllDaftarTA = async (req, res) => {
 
 export const getDetailDaftarTAByMhsiswa = async (req, res) => {
     try {
-        const { idMhsiswa } = req.params;
+        const { idMahasiswa } = req.params;
 
         const detailDaftarTA = await prisma.daftarTA.findUnique({
-            where: { idMhsiswa },
+            where: { idMahasiswa },
             include: {
                 tA: true,
                 mahasiswa: true,

@@ -13,6 +13,7 @@ export default function PengajuanJudul() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bidang, setBidang] = useState(null);
+  const [judulTA, setJudul] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -25,10 +26,21 @@ export default function PengajuanJudul() {
       console.log(error);
     }
   }
+
   useEffect(() => {
     fetchData();
   }, []);
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const idTA = data.idTA;
+    const result = await ajukanJudul(idTA, judulTA);
+    if (result.success) {
+      alert(result.message);
+    } else {
+      alert(result.message);
+    }
+  } 
+
   return (
     <>
       <h1 className="font-bold text-2xl mb-6"> Pengajuan Judul</h1>
@@ -39,8 +51,8 @@ export default function PengajuanJudul() {
         <Input  label="Bidang" value={bidang} readOnly />
       </div>
 
-      <form className="mt-4">
-        <TextArea label="Judul Tugas Akhir" />
+      <form onSubmit={handleSubmit} className="mt-4">
+        <TextArea label="Judul Tugas Akhir" value={judulTA} onChange={(e)=>setJudul(e.target.value)} />
         <div className="flex justify-end">
           <Button custom="mt-8">Submit</Button>
         </div>

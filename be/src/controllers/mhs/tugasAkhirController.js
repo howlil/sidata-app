@@ -201,10 +201,10 @@ export const ajukanJudulTA = async (req, res) => {
         .json({ success: false, message: "TA tidak ditemukan" });
     }
 
-    if (existingTA.status !== status.diterima) {
+    if (existingTA.status !== status.disetujui) {
       return res.status(400).json({
         success: false,
-        message: "Hanya TA dengan status diterima yang dapat mengajukan judul",
+        message: "Hanya TA dengan status disetujui yang dapat mengajukan judul",
       });
     }
 
@@ -216,10 +216,9 @@ export const ajukanJudulTA = async (req, res) => {
       },
     });
 
-    // Reset approval status for all advisors
     await prisma.dosenPembimbingTA.updateMany({
       where: { idTA },
-      data: { approved: status.diproses },
+      data: { status: status.diproses },
     });
 
     res.status(200).json({
