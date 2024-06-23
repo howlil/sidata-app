@@ -1,14 +1,15 @@
-export default async function editAkunDosen (nama,email,password,nim,alamat,id){
-    const myHeaders = new Headers();
+const addAkunDosen = async (nama, nip, email, password, jabatanId, bidangDosen,id) => {
+  const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
     
     const raw = JSON.stringify({
-      "nama": nama,
-      "email": email,
-      "password": password,
-      "nim": nim,
-      "alamat": alamat
+      nama,
+      nip,
+      email,
+      password,
+      jabatanId,
+      BidangDosen: bidangDosen.map(bidang => ({ bidangId: bidang }))
     });
     
     const requestOptions = {
@@ -29,3 +30,4 @@ export default async function editAkunDosen (nama,email,password,nim,alamat,id){
     console.log(error)
    }
 }
+export default addAkunDosen;
