@@ -1,5 +1,6 @@
+import getTAdetailByIdMahasiswa from '@/apis/dosen/TA/detailTaMhs'
+import editAjukanIdeTA from '@/apis/mhs/TA/editIde'
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import TextArea from "@/components/ui/TextArea";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -7,11 +8,12 @@ import InputCheckList from "@/components/ui/InputCheckList";
 import getDosenByBidang from "@/apis/admin/datamaster/dosen/getDosenByBidang";
 import getAllBidang from "@/apis/dosen/bidang/getAllBidang";
 import getAllAkunDosen from "@/apis/admin/datamaster/dosen/getAllAkunDosen";
-import Toast from "@/components/ui/Toast";
 import getDosenPembimbingByBidang from "@/apis/admin/datamaster/dosen/getDosenPembimbingByBidang";
 import getJabatanById from "@/apis/dosen/jabatan/getJabatanbyId";
-import ajukanIde from "@/apis/mhs/TA/ajukanIde";
 import { getDataFromToken } from "@/utils/getDataToken";
+import Toast from '@/components/ui/Toast'
+
+
 
 const jabatanRank = {
   "Asisten Ahli": 1,
@@ -20,7 +22,8 @@ const jabatanRank = {
   "Profesor": 4
 };
 
-export default function PengajuanIde() {
+
+export default function EditPengajuanIde() {
   const [ideTA, setIdeTA] = useState("");
   const [deskripsiIde, setDeskripsiIde] = useState("");
   const [bidangId, setBidangId] = useState("");
@@ -31,6 +34,7 @@ export default function PengajuanIde() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [idTA, setIdTA] = useState(null);
   const userID = getDataFromToken()?.userId;
 
 
@@ -56,6 +60,27 @@ export default function PengajuanIde() {
 
     fetchBidangOptions();
   }, []);
+
+useEffect(() => {
+    const fetchTA = async () => {
+      try {
+        const response = await getTAdetailByIdMahasiswa(userID);
+        if (response.success) {
+          setIdeTA(response.data.ideTA);
+          setIdTA(response.data.idTA);
+          setDeskripsiIde(response.data.deskripsiIde);
+          setBidangId(response.data.bidangId);
+          setSelectedDosen(response.data.DosenPembimbingTA.map((dosenPembimbing) => dosenPembimbing.DosenPembimbing.Dosen.idDosen));          } else {
+          setError(response.message);
+        }
+      } catch (error) {
+        setError('Terjadi kesalahan saat mengambil data TA');
+        console.error('Fetch error:', error);
+      }
+    };
+    fetchTA();
+}, [userID]);
+
 
   useEffect(() => {
     const fetchDosenOptions = async () => {
@@ -199,17 +224,19 @@ export default function PengajuanIde() {
 
     const selectedDosenData = dosenOptions.filter((dosen) =>selectedDosen.includes(dosen.value));
     const pembimbingList = await determinePembimbingType(selectedDosenData);
-    console.log(pembimbingList);
 
     try {
-      const response = await ajukanIde({
+      const response = await editAjukanIdeTA({
         idMahasiswa: userID,
         ideTA,
         deskripsiIde,
         bidangId,
-        dosenPembimbingIDs: pembimbingList.map((dosen) => ({
+        dosenPembimbingIDs: pembimbingList?.map((dosen) => ({
           dosenPembimbingID: dosen.id,
         })),
+        idTA,
+        id :idTA
+
       });
 
       if (response.success) {
@@ -224,10 +251,9 @@ export default function PengajuanIde() {
       setLoading(false);
     }
   };
-
   return (
     <section>
-      <h1 className="font-bold text-2xl mb-6">Pengajuan Ide</h1>
+      <h1 className="font-bold text-2xl mb-6">Edit Pengajuan Ide</h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <TextArea
@@ -236,15 +262,7 @@ export default function PengajuanIde() {
             value={ideTA}
             onChange={(e) => setIdeTA(e.target.value)}
           />
-          <p className="text-sm mt-2 text-neutral-500">
-            Belum memiliki ide TA?{" "}
-            <Link
-              className="font-semibold text-ijau-300"
-              to="/mhs/ajukanJadwalKonsultasi"
-            >
-              Disini
-            </Link>
-          </p>
+         
         </div>
         <TextArea
           label="Deskripsi Ide"
@@ -274,7 +292,7 @@ export default function PengajuanIde() {
 
         <div className="flex justify-end">
           <Button custom="mt-8" type="submit" disabled={loading}>
-            {loading ? "Mengajukan..." : "Ajukan Ide"}
+            {loading ? "Mengajukan..." : "Edit Ajukan Ide"}
           </Button>
         </div>
       </form>
