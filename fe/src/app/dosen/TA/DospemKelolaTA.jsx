@@ -9,6 +9,7 @@ import Select from "@/components/ui/Select";
 import TextArea from "@/components/ui/TextArea";
 import { getDataFromToken } from "@/utils/getDataToken";
 import StatusTA from "@/components/ui/StatusTA";
+import accJudul from "@/apis/dosen/TA/accJudul";
 
 export default function DospemKelolaTA() {
   const { id } = useParams();
@@ -18,11 +19,20 @@ export default function DospemKelolaTA() {
   const [idDosPem, setIdDosPem] = useState(null);
   const navigate = useNavigate();
   const dosenId = getDataFromToken()?.userId;
+  const [status, setStatus] = useState({ status: "", statusTA: "" });
+  const judul = status.status === "diproses" && status.statusTA === "ide";
+  const ide = status.status === "diproses" && status.statusTA === "belumAda";
 
   useEffect(() => {
     const fetchTADetail = async () => {
       try {
         const response = await getTAdetailByIdMahasiswa(id);
+        if (response.success) {
+          setStatus({
+            status: response.data.status,
+            statusTA: response.data.statusTA,
+          });
+        }
         response.data.DosenPembimbingTA.find((id) => {
           if (id.DosenPembimbing.Dosen.idDosen === dosenId) {
             setIdDosPem(id.dosenPembimbingID);
@@ -48,17 +58,32 @@ export default function DospemKelolaTA() {
     const isApproved = statusAcc === "disetujui" ? true : false;
     const id = idDosPem;
     try {
-      const response = await accIdeTa(idTA, isApproved, id);
-      console.log(response);
+      if (judul) {
+        const response = await accJudul(idTA, isApproved, id);
         if (response.success) {
           setTaDetail({
             ...taDetail,
             statusTA: response.data.statusTA,
             status: response.data.status,
           });
+          navigate("/dosen/kelolaTaMahasiswa");
         } else {
           setError(response.message);
         }
+      }
+      if (ide) {
+        const response = await accIdeTa(idTA, isApproved, id);
+        if (response.success) {
+          setTaDetail({
+            ...taDetail,
+            statusTA: response.data.statusTA,
+            status: response.data.status,
+          });
+          navigate("/dosen/kelolaTaMahasiswa");
+        } else {
+          setError(response.message);
+        }
+      }
     } catch (err) {
       setError("Terjadi kesalahan saat mengubah status TA");
       console.error("Update error:", err);
@@ -90,6 +115,7 @@ export default function DospemKelolaTA() {
           value={taDetail.Mahasiswa.nama}
           readOnly
         />
+
         <Input label="NIM" value={taDetail.Mahasiswa.nim} readOnly />
         <Input label="Bidang" value={taDetail.Bidang.namaBidang} readOnly />
         <TextArea label="Ide Tugas Akhir" value={taDetail.ideTA} readOnly />
@@ -128,9 +154,7 @@ export default function DospemKelolaTA() {
             ]}
           />
           <div className="flex justify-end">
-            <Button custom="mt-8" >
-              Simpan
-            </Button>
+            <Button custom="mt-8">Simpan</Button>
           </div>
         </form>
       </div>

@@ -1,7 +1,6 @@
 import getTAdetailByIdMahasiswa from '@/apis/dosen/TA/detailTaMhs'
 import editAjukanIdeTA from '@/apis/mhs/TA/editIde'
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import TextArea from "@/components/ui/TextArea";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";

@@ -18,3 +18,20 @@
   -ms-overflow-style: none;
   scrollbar-width: none;  
 }
+
+.calendar-todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+.calendar-todo-list li {
+  margin-bottom: 5px;
+}
+
+.calendar-todo-list .rs-badge {
+  margin-right: 5px;
+}
+
+.calendar-todo-list p {
+  display: inline;
+}

@@ -73,7 +73,9 @@ export default function KelolaAkunMhs() {
           setNim("");
           setAlamat("");
         }
-        navigate("/admin/data/dataMhs");
+        setTimeout(() => {  
+          navigate("/admin/data/dataMhs");
+        }, 1000);
       } else {
         setError(response.message);
       }

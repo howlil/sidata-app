@@ -51,7 +51,7 @@ export default function DataMhs() {
                 <Button onClick={() => navigate('/admin/data/dataMhs/tambahAkun')}>Tambah Data</Button>
             </section>
             <section className="mt-8">
-                <Tables columns={columns} data={data} del="hidden" onEdit={(row)=>handleEdit(row)} />
+                <Tables columns={columns} show="hidden" down={"hidden"} data={data} del="hidden" onEdit={(row)=>handleEdit(row)} />
             </section>
         </Layout>
     );

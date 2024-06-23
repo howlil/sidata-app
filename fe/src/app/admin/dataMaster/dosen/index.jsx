@@ -35,7 +35,7 @@ export default function DataDosen() {
         <Button onClick={() => navigate('/admin/data/dataDosen/tambahAkun')}>Tambah Data</Button>
       </section>
       <section className="mt-8">
-      <Tables columns={columns} data={dosenList} del="hidden" onEdit={(row) => handleEdit(row)} />
+      <Tables columns={columns} show={"hidden"} down={"hidden"} data={dosenList} del="hidden" onEdit={(row) => handleEdit(row)} />
       </section>
     </Layout>
   );

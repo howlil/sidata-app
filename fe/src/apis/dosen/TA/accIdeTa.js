@@ -25,6 +25,7 @@ export default async function accIdeTa(
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/accIdeTA`;
         const response = await fetch(apiUrl, requestOptions);
         const result = await response.json();
+        console.log(result);    
         return result;
 
     } catch (error) {

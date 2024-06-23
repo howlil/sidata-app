@@ -3,8 +3,8 @@ import CardDashboard from "@/components/ui/CardDashboard";
 import { getDataFromToken } from "@/utils/getDataToken";
 import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
 import { useEffect, useState } from "react";
-import Tables from "@/components/ui/Table";
 import { Tooltip } from 'react-tooltip'
+import RiwayatKonsul from "./RiwayatKonsul";
 import {MessageCircleQuestion} from "lucide-react"
 import { useNavigate } from "react-router-dom";
 
@@ -53,26 +53,9 @@ export default function DashboardMhs() {
         />
       </section>
         <section className="mt-12">
-          <h1 className="font-medium mb-4 text-2xl">Riwayat Konsultasi Prodi</h1>
-          <Tables
-            columns={[
-              {
-                header: "Kendala",
-                accessor: "kendala",
-              },
-              {
-                header: "Tanggal",
-                accessor: "tanggal",
-              },
-              {
-                header: "Status",
-                accessor: "status",
-              },
-            ]}
-   
-          />
+          <RiwayatKonsul />
       </section>
-      <section onClick={()=>navigate("/mhs/ajukanJadwalKonsultasi")} id="tool" className="absolute bottom-10 bg-white shadow-xl rounded-full p-2 right-10">
+      <section onClick={()=>navigate("/mhs/ajukanJadwalKonsultasi")} id="tool" className="absolute hover:scale-105 ts bottom-10 bg-white shadow-xl rounded-full p-2 right-10">
        <MessageCircleQuestion size={32} />
       </section>
       <Tooltip anchorSelect="#tool">Konsultasi Prodi</Tooltip>

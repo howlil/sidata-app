@@ -49,7 +49,6 @@ app.use("/", server.bimbinganTa);
 app.use("/", server.konsultasiKaprodi);
 app.use("/", server.vectorize);
 app.use("/", server.genertePdf);
-app.use("/", server.konsulProdi);
 app.use("/", server.dashboard);
 
 
@@ -107,11 +106,16 @@ app.use((err, req, res, next) => {
     error: err.message,
   });
 });
-// 404 handler
+// Enhanced 404 handler
 app.use((req, res, next) => {
-  res.status(404).send('Not Found');
+  res.status(404).json({
+    status: 'error',
+    message: 'Not Found',
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
 });
-
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

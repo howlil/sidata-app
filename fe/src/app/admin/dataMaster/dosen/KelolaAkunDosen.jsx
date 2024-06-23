@@ -136,7 +136,9 @@ export default function KelolaAkunDosen() {
 
       if (response.success) {
         setSuccess("Data dosen berhasil disimpan!");
-        navigate("/admin/data/dataDosen");
+        setTimeout(() => {
+          navigate("/admin/data/dataDosen");
+        }, 1000);
       } else {
         setError(response.message);
       }

@@ -15,7 +15,6 @@ import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post(
   "/ajukanBimbinganTA",
-  authorizeRole("mahasiswa"),
   authenticateToken,
   ajukanJadwalBimbingan
 );
