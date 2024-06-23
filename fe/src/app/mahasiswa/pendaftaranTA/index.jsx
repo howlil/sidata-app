@@ -1,161 +1,54 @@
-import Layout from "@/components/other/layout";
-import TextArea from "@/components/ui/TextArea";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import daftarTA from "@/apis/mhs/TA/daftarTA";
-import InputFile from "@/components/ui/InputFIle";
+import { useState, useEffect } from "react";
 import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
 import { getDataFromToken } from "@/utils/getDataToken";
-import Toast from "@/components/ui/Toast";
-import { useEffect, useState } from "react";
+import EditDaftarTA from "./EditDaftarTA";
+import PendaftaranTA from "./DaftarTA";
 
-export default function PendaftaranTA() {
+export default function PengajuanTA() {
   const id = getDataFromToken()?.userId;
-  const [data, setData] = useState(null);
   const [status, setStatus] = useState({ status: "", statusTA: "" });
-  const [formFiles, setFormFiles] = useState({
-    transkripNilai: null,
-    buktiLulus: null,
-    buktiKRS: null,
-    suratTugas: null,
-    suratIzinKuliah: null,
-    buktiKP: null,
-  });
-  const [toast, setToast] = useState({
-    message: "",
-    isVisible: false,
-    isSuccess: true,
-  });
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getTAdetailByIdMahasiswa(id);
-        if (response.success) {
-          setData(response.data);
-          setStatus({
-            status: response.data.status,
-            statusTA: response.data.statusTA,
-          });
-        } else {
-          console.error(response.message);
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
     fetchData();
-  }, [id]);
-
-  const eligible = status.status === "disetujui" && status.statusTA === "judul";
-
-  if (!eligible) {
-    return (
-      <Layout>
-        <p>pstika mengajukan judul</p>
-      </Layout>
-    );
-  }
-
-  const handleFileChange = (name, file) => {
-    setFormFiles((prevState) => ({
-      ...prevState,
-      [name]: file,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  }, []);
+  const fetchData = async () => {
     try {
-      const result = await daftarTA(
-        id,
-        data.idTA,
-        formFiles.transkripNilai,
-        formFiles.buktiLulus,
-        formFiles.buktiKRS,
-        formFiles.suratTugas,
-        formFiles.suratIzinKuliah,
-        formFiles.buktiKP
-      );
-
-      if (result.success) {
-        setToast({
-          message: "Pendaftaran TA berhasil!",
-          isVisible: true,
-          isSuccess: true,
+      const response = await getTAdetailByIdMahasiswa(id);
+      if (response.success) {
+        setStatus({
+          status: response.data.status,
+          statusTA: response.data.statusTA, 
         });
       } else {
-        setToast({
-          message: "Pendaftaran TA gagal!",
-          isVisible: true,
-          isSuccess: false,
-        });
+        setError(response.message);
       }
-    } catch (error) {
-      console.error("Error submitting form: ", error);
-      setToast({
-        message: "Terjadi kesalahan!",
-        isVisible: true,
-        isSuccess: false,
-      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const start = status.statusTA === "" && status.status === "";
+  const start1 = status.statusTA === "belumAda" && status.status === "diproses";
+  const start3 = status.statusTA === "belumAda" && status.status === "ditolak";
+  const start2 = status.statusTA === "ide" && status.status === "diproses";
+  const start4 = status.statusTA === "ide" && status.status === "ditolak";
   return (
-    <Layout>
-      {toast.isVisible && (
-        <Toast
-          message={toast.message}
-          isVisible={toast.isVisible}
-          onClose={() => setToast((prevState) => ({ ...prevState, isVisible: false }))}
-          isSuccess={toast.isSuccess}
-        />
+    <>
+      {loading && <p>Loading...</p>}
+      {status.statusTA === "ide" && status.status === "disetujui" && (
+        <PendaftaranTA />
       )}
-      <div className="space-y-3 mb-4">
-        <h1 className="font-bold text-2xl mb-8">Pendaftaran TA</h1>
-        <TextArea label="Ide Tugas Akhir" value={data?.ideTA} readOnly />
-        <TextArea label="Deskripsi Ide" value={data?.deskripsiIde} readOnly />
-        <TextArea label="Judul Tugas Akhir" value={data?.judulTA} readOnly />
-        <Input label="Bidang" value={data?.Bidang.namaBidang} readOnly />
-      </div>
+      {status.statusTA === "judul" && status.status === "ditolak" && (
+        <EditDaftarTA />
+      )}
+      {start && start1 || start2 || start3 || start4 && (
+        <p>Ajukan judul lebih dulu</p>
+      )}
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <InputFile
-          label="Transkrip Nilai"
-          placeholder="Transkrip.pdf"
-          onChange={(file) => handleFileChange("transkripNilai", file)}
-        />
-        <InputFile
-          label="Bukti Lulus Matakuliah Bahasa Indonesia dan Seminar Proposal"
-          placeholder="Bukti.pdf"
-          onChange={(file) => handleFileChange("buktiLulus", file)}
-        />
-        <InputFile
-          label="Bukti KRS mengambil matkul Tugas Akhir"
-          placeholder="KRS.pdf"
-          onChange={(file) => handleFileChange("buktiKRS", file)}
-        />
-        <InputFile
-          label="Surat Tugas Penunjukan dosen pembimbing Tugas Akhir"
-          placeholder="surat_tugas.pdf"
-          onChange={(file) => handleFileChange("suratTugas", file)}
-        />
-        <InputFile
-          label="Surat Izin perkuliahan"
-          placeholder="surat_izin.pdf"
-          onChange={(file) => handleFileChange("suratIzinKuliah", file)}
-        />
-        <InputFile
-          label="Bukti Mengambil KP dan Matkul Pilihan"
-          placeholder="buktikKP.pdf"
-          onChange={(file) => handleFileChange("buktiKP", file)}
-        />
-
-        <div className="flex justify-end">
-          <Button custom="mt-8" type="submit">Daftar TA</Button>
-        </div>
-      </form>
-    </Layout>
+    </>
   );
 }

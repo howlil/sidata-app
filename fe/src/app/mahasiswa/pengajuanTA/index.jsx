@@ -13,6 +13,7 @@ export default function PengajuanTA() {
   const [status, setStatus] = useState({ status: "", statusTA: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 console.log(status)
   useEffect(() => {
     fetchData();
@@ -53,6 +54,9 @@ console.log(status)
         <p>proses</p>
       )}
       {status.statusTA === "ide" && status.status === "ditolak"  && <EditPengajuanJudul />}
+      {status.statusTA === "judul" && status.status === "ditolak" && (
+        <p>Daftar TA tersedia</p>
+      )}
       {status.statusTA === "judul" && status.status === "disetujui" && (
         <Riwayat />
       )}

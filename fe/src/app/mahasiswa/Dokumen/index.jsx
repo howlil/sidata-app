@@ -56,7 +56,7 @@ export default function Dokumen() {
   const eligible = status.status === "disetujui" && status.statusTA === "judul";
 
   const handleDownload = () => {
-    if (!eligible) {
+    if (!eligible ) {
       setToastMessage("Pastikan Anda sudah mendapatkan persetujuan judul TA");
       setIsSuccess(false);
       setIsToastVisible(true);

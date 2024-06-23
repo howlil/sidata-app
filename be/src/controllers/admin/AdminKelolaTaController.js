@@ -91,8 +91,8 @@ export const getDetailDaftarTAByMhsiswa = async (req, res) => {
         const detailDaftarTA = await prisma.daftarTA.findUnique({
             where: { idMahasiswa },
             include: {
-                tA: true,
-                mahasiswa: true,
+                TA: true,
+                Mahasiswa: true,
             },
         });
 
@@ -106,6 +106,35 @@ export const getDetailDaftarTAByMhsiswa = async (req, res) => {
         });
     } catch (error) {
         console.error("Error retrieving detail Daftar TA by Mahasiswa:", error);
+        res.status(500).json({
+            success: false,
+            message: "Kesalahan server: " + error.message,
+        });
+    }
+};
+
+export const getDetailDaftarTA = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const detailDaftarTA = await prisma.daftarTA.findUnique({
+            where: { daftarTAId: id },
+            include: {
+                TA: true,
+                Mahasiswa: true,
+            },
+        });
+
+        if (!detailDaftarTA) {
+            return res.status(404).json({ success: false, message: "Detail pendaftaran TA tidak ditemukan" });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: detailDaftarTA,
+        });
+    } catch (error) {
+        console.error("Error retrieving detail Daftar TA by ID:", error);
         res.status(500).json({
             success: false,
             message: "Kesalahan server: " + error.message,

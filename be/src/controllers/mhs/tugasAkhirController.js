@@ -58,6 +58,11 @@ const daftarTASchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   idTA: yup.string().required("ID TA wajib diisi"),
 });
+const editdaftarTASchema = yup.object().shape({
+  idDaftarTA: yup.string().required("ID Daftar TA tidak ditemukan"),
+  idMahasiswa: yup.string().required("ID Mahasiswa  tidak ditemukan"),
+  idTA: yup.string().required("ID TA  tidak ditemukan"),
+});
 
 export const ajukanIdeTA = async (req, res) => {
   try {
@@ -420,7 +425,7 @@ export const daftarTA = async (req, res) => {
 };
 export const editDaftarTA = async (req, res) => {
   try {
-    await daftarTASchema.validate(req.body);
+    await editdaftarTASchema.validate(req.body);
 
     const { idDaftarTA, idMahasiswa, idTA } = req.body;
     const transkripNilai = req.files["transkripNilai"]
