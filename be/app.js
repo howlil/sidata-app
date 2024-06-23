@@ -1,13 +1,4 @@
-// var createError = require("http-errors");
-// var express = require("express");
-// var path = require("path");
-// var cookieParser = require("cookie-parser");
-// var logger = require("morgan");
-// const multer = require("multer");
-// const cors = require("cors");
-// var bodyParser = require("body-parser");
-// var server = require("./src/routes/index");
-import createError from 'http-errors';
+
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -23,8 +14,14 @@ const __dirname = path.dirname(__filename);
 
 var app = express();
 
-app.use(cors());
-app.use(logger("dev"));
+const corsOptions = {
+  origin: ' http://localhost:5173', 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -40,9 +37,14 @@ app.use("/", server.tugasAkhir);
 app.use("/", server.bimbinganTa);
 app.use("/", server.konsultasiKaprodi);
 app.use("/", server.vectorize);
+app.use("/", server.genertePdf);
+app.use("/", server.konsulProdi);
+app.use("/", server.dashboard);
 
 
 app.use("/fotoUser", express.static("public/images/profile"));
+app.use("/pdf", express.static("public/images/filePdf"));
+
 
 app.use((req, res, next) => {
   console.log(req.body);
@@ -94,12 +96,15 @@ app.use((err, req, res, next) => {
     error: err.message,
   });
 });
-app.use(function (req, res, next) {
-  next(createError(404));
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).send('Not Found');
 });
 
-app.use(function (req, res, next) {
-  res.status(404).json({ message: "Not Found" });
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 export default app;

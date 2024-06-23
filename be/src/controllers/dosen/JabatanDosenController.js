@@ -11,6 +11,19 @@ export const createJabatan = async (req, res) => {
   
       await jabatanSchema.validate(req.body, { abortEarly: false });
   
+      const existingJabatan = await prisma.jabatan.findFirst({
+        where: {
+          namaJabatan,
+        },
+      });
+  
+      if (existingJabatan) {
+        return res.status(400).json({
+          success: false,
+          message: "Jabatan with the same name already exists",
+        });
+      }
+  
       const newJabatan = await prisma.jabatan.create({
         data: {
           namaJabatan,
@@ -28,7 +41,7 @@ export const createJabatan = async (req, res) => {
       }
       res.status(500).json({ success: false, message: error.message });
     }
-  };
+};
   
   export const getAllJabatan = async (req, res) => {
     try {
@@ -57,12 +70,28 @@ export const createJabatan = async (req, res) => {
     }
   };
   
-  export const updateJabatan = async (req, res) => {
+export const updateJabatan = async (req, res) => {
     try {
       const { id } = req.params;
       const { namaJabatan } = req.body;
   
       await jabatanSchema.validate(req.body, { abortEarly: false });
+  
+      const existingJabatan = await prisma.jabatan.findFirst({
+        where: {
+          namaJabatan,
+          NOT: {
+            jabatanId: id,
+          },
+        },
+      });
+  
+      if (existingJabatan) {
+        return res.status(400).json({
+          success: false,
+          message: "Nama Jabatan Sudah Ada",
+        });
+      }
   
       const updatedJabatan = await prisma.jabatan.update({
         where: { jabatanId: id },
@@ -81,7 +110,6 @@ export const createJabatan = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
     }
   };
-  
   export const deleteJabatan = async (req, res) => {
     try {
       const { id } = req.params;
@@ -90,7 +118,7 @@ export const createJabatan = async (req, res) => {
         where: { jabatanId: id },
       });
   
-      res.status(200).json({ success: true, message: "Jabatan deleted successfully" });
+      res.status(200).json({ success: true, message: "Berhasil dihapus" });
     } catch (error) {
       res.status(500).json({ success: false, message: error.message });
     }

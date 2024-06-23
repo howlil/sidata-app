@@ -1,26 +1,54 @@
 import Layout from "@/components/other/layout";
-import TextArea from "@/components/ui/TextArea";
-import Select from "@/components/ui/Select";
-import { Link } from "react-router-dom";
-import Button from "@/components/ui/Button";
-import InputCheck from "@/components/ui/InputCheckList";
+import PengajuanIde from "./PengajuanIde";
+import { useState, useEffect } from "react";
+import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
+import { getDataFromToken } from "@/utils/getDataToken";
+import EditPengajuanIde from "./EditPengajuanIde";
+import PengajuanJudul from "./PengajuanJudul";
 
 export default function PengajuanTA() {
+  const id = getDataFromToken()?.userId;
+  const [status, setStatus] = useState({ status: "", statusTA: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+console.log(status)
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
+    try {
+      const response = await getTAdetailByIdMahasiswa(id);
+      if (response.success) {
+        setStatus({
+          status: response.data.status,
+          statusTA: response.data.statusTA, 
+        });
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Layout>
-      <h1 className="font-bold text-2xl mb-6">Pengajuan Ide</h1>
-      <form className="space-y-4">
-        <div>
-          <TextArea label="Ide Tugas Akhir" placeholder="Ide Tugas Akhir" />
-          <p className="text-sm mt-2 text-neutral-500">Belum memiliki ide TA ? <Link className="font-semibold text-ijau-300" to={"/ajukanJadwalKonsultasi"}>Disini</Link></p>
-        </div>
-        <TextArea label="Deskripsi Judul" placeholder="Deskripsi Judul" />
-        <Select label="Dosen Pembimbing" />
-        <InputCheck item="aul" />
-        <div className="flex justify-end">
-          <Button>Ajukan Ide</Button>
-        </div>
-      </form>
+      {loading && <p>Loading...</p>}
+      {status.statusTA === "" && status.status==="" && (
+        <PengajuanIde />
+      )}
+        
+      {status.statusTA === "belumAda" && status.status === "diproses" && (
+        <p>Tugas Akhir Anda sedang diproses</p>
+      )}
+      {status.statusTA === "belumAda" && status.status === "ditolak" && (
+       <EditPengajuanIde />
+      )}
+      {status.statusTA === "ide" && status.status === "disetujui" || <PengajuanJudul />}
+
+
     </Layout>
   );
 }

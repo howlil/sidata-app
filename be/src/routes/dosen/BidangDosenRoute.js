@@ -10,8 +10,8 @@ import {
 import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post("/createBidang", authenticateToken, authorizeRole("admin"), createBidang);
-router.get("/getAllBidang", authenticateToken, authorizeRole("admin"), getAllBidang);
-router.get("/getBidangById/:id", authenticateToken, authorizeRole("admin"), getBidangById);
+router.get("/getAllBidang", authenticateToken, getAllBidang);
+router.get("/getBidangById/:id", authenticateToken, getBidangById);
 router.put("/updateBidang/:id", authenticateToken, authorizeRole("admin"), updateBidang);
 router.delete("/deleteBidang/:id", authenticateToken, authorizeRole("admin"), deleteBidang);
 

@@ -36,7 +36,7 @@ export const authenticateToken = async (req, res, next) => {
           message: "Token tidak ditemukan atau sudah logout sebelumnya",
         });
       }
-
+      
       req.user = decoded;
       req.tokenId = isToken.id;
       req.token = token;

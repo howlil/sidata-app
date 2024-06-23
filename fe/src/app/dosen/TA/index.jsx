@@ -10,12 +10,20 @@ export default function HandleTA() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
   const id = getDataFromToken()?.userId
+=======
+  const id = getDataFromToken()?.userId;
+>>>>>>> origin/faizz
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllTAMahasiswaByDosPemId(id);
+<<<<<<< HEAD
+=======
+         console.log(response);
+>>>>>>> origin/faizz
         if (response.success) {
           setData(response.data);
         } else {
@@ -64,7 +72,11 @@ export default function HandleTA() {
         ) : error ? (
           <p>Error: {error}</p>
         ) : (
+<<<<<<< HEAD
           <Tables columns={columns} data={data} del="hidden" down={"hidden"} show={"hidden"} onEdit={(row)=>handleEdit(row)} />
+=======
+          <Tables columns={columns} data={data} del="hidden" onEdit={(row)=>handleEdit(row)} />
+>>>>>>> origin/faizz
         )}
       </section>
     </Layout>

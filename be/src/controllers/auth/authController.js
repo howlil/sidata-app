@@ -57,13 +57,8 @@ export const buatAkunAdmin = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
+ 
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Silahkan lengkapi data akun anda" });
-    }
 
     const admin = await prisma.admin.findUnique({ where: { email } });
     const dosen = await prisma.dosen.findUnique({ where: { email } });
@@ -93,14 +88,26 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Password akun anda salah" });
     }
 
+    let userId;
+    if (userType === 'mahasiswa') {
+      userId = user.idMahasiswa;
+    } else if (userType === 'dosen') {
+      userId = user.idDosen;
+    } else if (userType === 'admin') {
+      userId = user.adminId;
+    } else {
+      console.error("Invalid user type");
+      return; 
+    }
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: userId,
+        name: user.nama,
         role: userType,
       },
       process.env.ACCESS_SECRET_KEY,
       {
-        expiresIn: "1h",
+        expiresIn: "1w",
       }
     );
 
@@ -120,6 +127,7 @@ export const login = async (req, res) => {
       data: tokenData,
     });
 
+  
     return res
       .status(200)
       .json({ success: true, message: "Berhasil login", token });

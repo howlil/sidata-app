@@ -1,4 +1,5 @@
 const generateDoc = async (idTA) => {
+<<<<<<< HEAD
   const myHeaders = new Headers();
   const token = localStorage.getItem('token');
   
@@ -23,6 +24,20 @@ const generateDoc = async (idTA) => {
       throw new Error(`Error generating document: ${response.status} - ${response.statusText}`);
     }
     
+=======
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/generatePdf/${idTA}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/pdf',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error generating document');
+    }
+
+>>>>>>> origin/faizz
     return await response.arrayBuffer();
   } catch (error) {
     console.error('Error generating document:', error);

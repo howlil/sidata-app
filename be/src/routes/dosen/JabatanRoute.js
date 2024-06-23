@@ -10,8 +10,8 @@ import {
 import { authenticateToken, authorizeRole } from "../../middlewares/auth.js";
 
 router.post("/createJabatan", authenticateToken, authorizeRole("admin"), createJabatan);
-router.get("/getAllJabatan", authenticateToken, authorizeRole("admin"), getAllJabatan);
-router.get("/getJabatanById/:id", authenticateToken, authorizeRole("admin"), getJabatanById);
+router.get("/getAllJabatan", authenticateToken, getAllJabatan);
+router.get("/getJabatanById/:id", authenticateToken, getJabatanById);
 router.put("/updateJabatan/:id", authenticateToken, authorizeRole("admin"), updateJabatan);
 router.delete("/deleteJabatan/:id", authenticateToken, authorizeRole("admin"), deleteJabatan);
 

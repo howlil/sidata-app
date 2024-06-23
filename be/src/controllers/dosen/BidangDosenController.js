@@ -11,6 +11,19 @@ export const createBidang = async (req, res) => {
 
     await bidangSchema.validate(req.body, { abortEarly: false });
 
+    const existingBidang = await prisma.bidang.findFirst({
+      where: {
+        namaBidang,
+      },
+    });
+
+    if (existingBidang) {
+      return res.status(400).json({
+        success: false,
+        message: "Bidang with the same name already exists",
+      });
+    }
+
     const newBidang = await prisma.bidang.create({
       data: {
         namaBidang,
@@ -65,6 +78,22 @@ export const updateBidang = async (req, res) => {
     const { namaBidang } = req.body;
 
     await bidangSchema.validate(req.body, { abortEarly: false });
+
+    const existingBidang = await prisma.bidang.findFirst({
+      where: {
+        namaBidang,
+        NOT: {
+          bidangId: id,
+        },
+      },
+    });
+
+    if (existingBidang) {
+      return res.status(400).json({
+        success: false,
+        message: "Bidang with the same name already exists",
+      });
+    }
 
     const updatedBidang = await prisma.bidang.update({
       where: { bidangId: id },

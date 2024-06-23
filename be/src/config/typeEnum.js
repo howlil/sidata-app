@@ -5,6 +5,7 @@ export const status ={
 }
 
 export const statusTA ={
+    belumAda : "belumAda",
     ide : "ide",
     judul : "judul",
     proposal : "proposal"

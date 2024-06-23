@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Layout from "@/components/other/layout";
 import Tables from "@/components/ui/Table";
 import { getDataFromToken } from "@/utils/getDataToken";
@@ -73,4 +74,14 @@ export default function BimbingaTA() {
       </section>
     </Layout>
   );
+=======
+import Layout from "@/components/other/layout"
+
+export default function BimbinganTA() {
+  return (
+    <Layout>
+      
+    </Layout>
+  )
+>>>>>>> origin/faizz
 }

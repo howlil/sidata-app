@@ -9,7 +9,10 @@ import Select from "@/components/ui/Select";
 import TextArea from "@/components/ui/TextArea";
 import { getDataFromToken } from "@/utils/getDataToken";
 import StatusTA from "@/components/ui/StatusTA";
+<<<<<<< HEAD
 import accJudul from "@/apis/dosen/TA/accJudul";
+=======
+>>>>>>> origin/faizz
 
 export default function DospemKelolaTA() {
   const { id } = useParams();
@@ -19,20 +22,26 @@ export default function DospemKelolaTA() {
   const [idDosPem, setIdDosPem] = useState(null);
   const navigate = useNavigate();
   const dosenId = getDataFromToken()?.userId;
+<<<<<<< HEAD
   const [status, setStatus] = useState({ status: "", statusTA: "" });
   const judul = status.status === "diproses" && status.statusTA === "ide";
   const ide = status.status === "diproses" && status.statusTA === "belumAda";
+=======
+>>>>>>> origin/faizz
 
   useEffect(() => {
     const fetchTADetail = async () => {
       try {
         const response = await getTAdetailByIdMahasiswa(id);
+<<<<<<< HEAD
         if (response.success) {
           setStatus({
             status: response.data.status,
             statusTA: response.data.statusTA,
           });
         }
+=======
+>>>>>>> origin/faizz
         response.data.DosenPembimbingTA.find((id) => {
           if (id.DosenPembimbing.Dosen.idDosen === dosenId) {
             setIdDosPem(id.dosenPembimbingID);
@@ -58,14 +67,20 @@ export default function DospemKelolaTA() {
     const isApproved = statusAcc === "disetujui" ? true : false;
     const id = idDosPem;
     try {
+<<<<<<< HEAD
       if (judul) {
         const response = await accJudul(idTA, isApproved, id);
+=======
+      const response = await accIdeTa(idTA, isApproved, id);
+      console.log(response);
+>>>>>>> origin/faizz
         if (response.success) {
           setTaDetail({
             ...taDetail,
             statusTA: response.data.statusTA,
             status: response.data.status,
           });
+<<<<<<< HEAD
           navigate("/dosen/kelolaTaMahasiswa");
         } else {
           setError(response.message);
@@ -84,6 +99,11 @@ export default function DospemKelolaTA() {
           setError(response.message);
         }
       }
+=======
+        } else {
+          setError(response.message);
+        }
+>>>>>>> origin/faizz
     } catch (err) {
       setError("Terjadi kesalahan saat mengubah status TA");
       console.error("Update error:", err);
@@ -115,7 +135,10 @@ export default function DospemKelolaTA() {
           value={taDetail.Mahasiswa.nama}
           readOnly
         />
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/faizz
         <Input label="NIM" value={taDetail.Mahasiswa.nim} readOnly />
         <Input label="Bidang" value={taDetail.Bidang.namaBidang} readOnly />
         <TextArea label="Ide Tugas Akhir" value={taDetail.ideTA} readOnly />
@@ -154,7 +177,13 @@ export default function DospemKelolaTA() {
             ]}
           />
           <div className="flex justify-end">
+<<<<<<< HEAD
             <Button custom="mt-8">Simpan</Button>
+=======
+            <Button custom="mt-8" >
+              Simpan
+            </Button>
+>>>>>>> origin/faizz
           </div>
         </form>
       </div>

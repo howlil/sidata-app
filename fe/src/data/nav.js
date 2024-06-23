@@ -55,18 +55,13 @@ export const dataDosen = [
     icon: "LayoutDashboard",
   },
   {
-    label: "Daftar Ide Mahasiwa",
-    href: "/dosen/daftarIdeMahasiwa",
-    icon: "LayoutDashboard",
+    label: "TA Mahasiwa",
+    href: "/dosen/kelolaTaMahasiswa",
+    icon: "SquareLibrary",
   },
   {
-    label: "Daftar Judul Mahasiswa",
-    href: "/dosen/daftarJudulMahasiswa",
-    icon: "LayoutDashboard",
-  },
-  {
-    label: "Daftar Bimbingan Mahasiswa",
-    href: "/dosen/daftarBimbinganMahasiswa",
-    icon: "LayoutDashboard",
+    label: "Jadwal Bimbingan",
+    href: "/dosen/bimbinganMahasiswa",
+    icon: "CalendarCheck",
   },
 ];
