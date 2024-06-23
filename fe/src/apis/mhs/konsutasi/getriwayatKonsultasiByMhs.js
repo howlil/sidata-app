@@ -11,7 +11,7 @@ export default async function getriwayatKonsultasiByMhs(id) {
 
       
       try {
-        const url = `${import.meta.env.VITE_API_BASE_URL}/getRiwayatKonsul/${id}`;
+        const url = `${import.meta.env.VITE_API_BASE_URL}/getRiwayatKonsultasi/${id}`;
         const response = await fetch(url, requestOptions);
         const result = await response.json();
         return result;

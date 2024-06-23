@@ -32,7 +32,8 @@ const uploadthingAppId = process.env.UPLOADTHING_APP_ID;
 const pineconeIndex = process.env.PINECONE_INDEX;
 const pdfUrl = process.env.PDF_URL;
 
-app.use(cors(corsOptions));app.use(logger("dev"));
+app.use(cors(corsOptions));
+app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());

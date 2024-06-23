@@ -8,7 +8,7 @@ export default function Layout({ children }) {
         <SideBarIndex />
       </aside>
       <div>
-        <nav className="fixed top-0 w-full bg-white py-4 pr-14 shadow-sm flex justify-end   right-0">
+        <nav className="fixed top-0 w-full bg-white py-4 pr-14 shadow-sm flex justify-end z-8   right-0">
           <NavbarIndex />
         </nav>
         <main className="h-full my-32 ml-80 mr-14">{children}</main>

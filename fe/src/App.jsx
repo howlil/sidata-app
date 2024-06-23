@@ -38,6 +38,26 @@ import DetailTAMhs from "./app/admin/TA/DetailTAMhs";
 export default function App() {
   const ProtectedMhsDashboard = withRole(DashboardMhs, ["mahasiswa"]);
   const ProtectedAdminDashboard = withRole(DashboardAdmin, ["admin"]);
+  const ProtectedDosenDashboard = withRole(Dashboard, ["dosen"]);
+  const ProtectedPendaftaranTA = withRole(PendaftaranTA, ["mahasiswa"]);
+  const ProtectedPengajuanTA = withRole(PengajuanTA, ["mahasiswa"]);
+  const ProtectedDokumen = withRole(Dokumen, ["mahasiswa"]);
+  const ProtectedBimbingaTA = withRole(BimbingaTA, ["mahasiswa"]);
+  const ProtectedListKonsul = withRole(ListKonsul, ["admin"]);
+  const ProtectedDataDosen = withRole(DataDosen, ["admin"]);
+  const ProtectedDataMhs = withRole(DataMhs, ["admin"]);
+  const ProtectedListTA = withRole(ListTA, ["admin"]);
+  const ProtectedKelolaAkunDosen = withRole(KelolaAkunDosen, ["admin"]);
+  const ProtectedKelolaAkunMhs = withRole(KelolaAkunMhs, ["admin"]);
+  const ProtectedChatBot = withRole(ChatBot, ["mahasiswa"]);
+  const ProtectedAjukanBimbingan = withRole(AjukanBimbingan, ["mahasiswa"]);
+  const ProtectedDetailBimbingan = withRole(DetailBimbingan, ["mahasiswa"]);
+  const ProtectedAjukanKonsultasi = withRole(AjukanKonsultasi, ["mahasiswa"]);
+  const ProtectedDetailBimbinganMhs = withRole(DetailBimbinganMhs, ["dosen"]);
+  const ProtectedHandleTA = withRole(HandleTA, ["dosen"]);
+  const ProtectedDospemKelolaTA = withRole(DospemKelolaTA, ["dosen"]);
+  const ProtectedDetailKonsulMhs = withRole(DetailKonsulMhs, ["admin"]);
+  const ProtectedDetailTAMhs = withRole(DetailTAMhs, ["admin"]);
 
   return (
     <>

@@ -133,7 +133,7 @@ export const getJumlahBimbinganByMahasiswa = async (req, res) => {
   try {
     const jumlahBimbingan = await prisma.jadwalBimbinganDosen.count({
       where: {
-        mahasiswaId: idMahasiswa,
+         idMahasiswa,
       },
     });
     if (jumlahBimbingan === 0) {
@@ -154,6 +154,8 @@ export const getJumlahBimbinganByMahasiswa = async (req, res) => {
       .json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
+
 export const getJumlahBimbinganByDosen = async (req, res) => {
   const { idDosen } = req.params;
 
@@ -181,3 +183,48 @@ export const getJumlahBimbinganByDosen = async (req, res) => {
       .json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
+
+
+export const getMahasiswaBimbinganByDosen = async(req, res)=> {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Dosen ID is required" });
+    }
+
+    const dosenPembimbing = await prisma.dosenPembimbing.findMany({
+      where: { dosenId :id },
+      include: {
+        DosenPembimbingTA: {
+          include: {
+            TA: {
+              include: {
+                Mahasiswa: true,
+                Bidang: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const mahasiswaBimbingan = dosenPembimbing.flatMap(dosen =>
+      dosen.DosenPembimbingTA.map(dp => ({
+        idTA: dp.idTA,
+        ideTA: dp.TA.ideTA,
+        deskripsiIde: dp.TA.deskripsiIde,
+        statusTA: dp.TA.statusTA,
+        namaMahasiswa: dp.TA.Mahasiswa.nama,
+        nimMahasiswa: dp.TA.Mahasiswa.nim,
+        namaBidang: dp.TA.Bidang.namaBidang
+      }))
+    );
+
+    const jumlahMahasiswaBimbingan = mahasiswaBimbingan.length;
+
+    res.json({ success: true, data: mahasiswaBimbingan, jumlah: jumlahMahasiswaBimbingan });
+  } catch (error) {
+    console.error("Error retrieving mahasiswa bimbingan:", error);
+    res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
+  }
+}

@@ -53,10 +53,13 @@ export default function Dokumen() {
     fetchData();
   }, [idTA]);
 
-  const eligible = status.status === "disetujui" && status.statusTA === "judul";
+  const eligible =
+    (status.status === "disetujui" && status.statusTA === "judul") ||
+    (status.status === "disetujui" && status.statusTA === "proposal")||
+    (status.status === "ditolak" && status.statusTA === "judul");
 
   const handleDownload = () => {
-    if (!eligible ) {
+    if (!eligible) {
       setToastMessage("Pastikan Anda sudah mendapatkan persetujuan judul TA");
       setIsSuccess(false);
       setIsToastVisible(true);

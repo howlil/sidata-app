@@ -300,6 +300,7 @@ export const akunDosenById = async (req, res) => {
       },
       include: {
         BidangDosen: true,
+        DosenPembimbing: true,
       }
     });
     if (!data)

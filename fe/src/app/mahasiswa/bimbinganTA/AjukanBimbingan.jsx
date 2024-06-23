@@ -9,6 +9,7 @@ import JadwalBimbingan from "./JadwalBimbingan";
 import Toast from "@/components/ui/Toast";
 import { getDataFromToken } from "@/utils/getDataToken";
 import getTAdetailByIdMahasiswa from "@/apis/dosen/TA/detailTaMhs";
+import { useNavigate } from "react-router-dom";
 
 export default function AjukanBimbingan() {
   const id = getDataFromToken()?.userId;
@@ -18,25 +19,34 @@ export default function AjukanBimbingan() {
   const [progresTA, setProgresTA] = useState("");
   const [tanggal, setTanggal] = useState("");
   const [waktuMulai, setWaktuMulai] = useState("");
-  const [waktuSelesai, setWaktuSelesai] = useState(""); 
+  const [waktuSelesai, setWaktuSelesai] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getTAdetailByIdMahasiswa(id).then((res) => {
-      const pembimbingOptions = res.data.map((item) => ({
-        value: item.dosenPembimbingID,
-        label: item.DosenPembimbing.Dosen.nama,
-      }));
-      setData(pembimbingOptions);
+      console.log(res);
+      if (res.data && Array.isArray(res.data.DosenPembimbingTA)) {
+        const pembimbingOptions = res.data.DosenPembimbingTA.map((item) => ({
+          value: item.dosenPembimbingID,
+          label: item.DosenPembimbing.Dosen.nama,
+        }));
+        setData(pembimbingOptions);
+      } else {
+        console.error("Unexpected response data format:", res.data);
+      }
+    }).catch((error) => {
+      console.error("Error fetching TA detail:", error);
     });
   }, [id]);
 
   const handleSelectChange = (e) => {
-    const value = Array.from(e.target.selectedOptions, option => option.value);
+    const value = e.target.value;
     setSelectedDosPembimbing(value);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +64,9 @@ export default function AjukanBimbingan() {
     if (result.success) {
       setToastMessage(result.message);
       setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/mhs/bimbinganTA");
+      }, 1000);
     } else {
       setToastMessage(result.message);
       setIsSuccess(false);

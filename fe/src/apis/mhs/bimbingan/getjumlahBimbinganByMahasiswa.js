@@ -1,4 +1,4 @@
-export default async function getJadwalBimbinganByMahasiswa(idMahasiswa) {
+export default async function getJumlahBimbinganByMahasiswa(idMahasiswa) {
     const myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("token"));
   
@@ -9,7 +9,7 @@ export default async function getJadwalBimbinganByMahasiswa(idMahasiswa) {
       };
   
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/getJadwalBimbinganByMahasiswa/${idMahasiswa}`;
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/jumlahBimbinganByMahasiswa/${idMahasiswa}`;
       const response = await fetch(apiUrl, requestOptions);
       const result = await response.json();
       return result;

@@ -32,6 +32,11 @@ export default function BimbingaTA() {
     return new Intl.DateTimeFormat(undefined, options).format(new Date(time));
 }
 
+  function handleEdit(id) {
+    console.log(id)
+    navigate(`/dosen/bimbinganMahasiswa/${id.id}`);
+  }
+
   return (
     <Layout>
       <section className="flex justify-between items-center">
@@ -43,6 +48,7 @@ export default function BimbingaTA() {
           del="hidden"
           down="hidden"
           show={"hidden"}
+          onEdit={(id) =>handleEdit(id)}  
           columns={[
             {
               header: "Progres TA",

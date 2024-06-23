@@ -27,7 +27,7 @@ const ajukanKonsultasi = async (
   };
 
   try {
-    const url = `${import.meta.env.VITE_API_BASE_URL}/ajukanJadwalKonsul`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/ajukanKonsultasiKaprodi`;
     const response = await fetch(url, requestOptions);
     const result = await response.json();
     return result;

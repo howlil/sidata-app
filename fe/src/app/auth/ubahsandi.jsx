@@ -1,16 +1,17 @@
 import { useState } from "react";
 import a from "/public/loga.svg";
 import b from "/public/logb.svg";
-import logo from "/public/logosidata.svg";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import ubahPassword from "@/apis/auth/ubahPassword";
+import {useNavigate} from 'react-router-dom';
 
 export default function UbahSandi() {
   const [email, setEmail] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const navigate = useNavigate();
   const [confirmPW, setConfirmPW] = useState("");
   const [toast, setToast] = useState({
     isVisible: false,
@@ -32,6 +33,10 @@ export default function UbahSandi() {
           message: "Password updated successfully!",
           isSuccess: true,
         });
+        setTimeout(() => { 
+          navigate(-1); 
+        }, 1000);        
+
         setEmail("");
         setOldPassword("");
         setNewPassword("");

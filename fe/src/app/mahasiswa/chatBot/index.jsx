@@ -120,7 +120,7 @@ export default function ChatBot() {
   return (
     <Layout>
       <div className="h-[400px]">
-        <section className="overflow-y-scroll h-[480px] rounded-lg section-scroll-hide">
+        <section className="overflow-y-scroll h-[450px] rounded-lg section-scroll-hide">
           {messages.map((message, index) => (
             <div key={index} className="mb-4 gap-3 items-start flex text-left">
               <div className="bg-green-400 rounded-full">

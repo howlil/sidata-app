@@ -378,75 +378,29 @@ export const getJadwalBimbinganByMahasiswaAndDosen = async (req, res) => {
 };
 
 export const getJadwalBimbinganById = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const jadwalBimbingan = await prisma.jadwalBimbinganDosen.findUnique({
-      where: {
-        id
-      },
-      include: {
-        Mahasiswa: true,
-        DosenPembimbing: {
-          include: {
-            Dosen: true,
-          },
-        },
-      },
-    });
-
-    if (!jadwalBimbingan) {
-      return res.status(404).json({
-        success: false,
-        message: "Jadwal bimbingan tidak ditemukan",
-      });
+    const { id } = req.params;
+    console.log("ID:", id);
+    if (!id) {
+      return res.status(400).json({ success: false, message: "ID is required" });
     }
-
-    res.status(200).json({
-      success: true,
-      data: jadwalBimbingan,
-    });
-  } catch (error) {
-    console.error("Error retrieving mentoring schedule:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Kesalahan server: " + error.message });
-  }
-};
-
-export const getDetailPengajuanJadwalBimbingan = async (req, res) => {
-  const { id } = req.params;
-
-  try {
     const jadwalBimbingan = await prisma.jadwalBimbinganDosen.findUnique({
       where: { id },
       include: {
         Mahasiswa: true,
         DosenPembimbing: {
           include: {
-            Dosen: true,
-          },
-        },
-      },
+            Dosen: true
+          }
+        }
+      }
     });
-
     if (!jadwalBimbingan) {
-      return res.status(404).json({
-        success: false,
-        message: "Jadwal bimbingan tidak ditemukan",
-      });
+      return res.status(404).json({ success: false, message: "Jadwal bimbingan not found" });
     }
-
-    res.status(200).json({
-      success: true,
-      data: jadwalBimbingan,
-    });
+    res.json({ success: true, data: jadwalBimbingan });
   } catch (error) {
-    console.error("Error getting mentoring schedule details:", error);
-    res.status(500).json({
-      success: false,
-      message: "Kesalahan server: " + error.message,
-    });
+    console.error("Error retrieving jadwal bimbingan:", error);
+    res.status(500).json({ success: false, message: "Kesalahan server: " + error.message });
   }
 };
-

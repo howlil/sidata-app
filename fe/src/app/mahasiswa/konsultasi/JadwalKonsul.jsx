@@ -12,7 +12,7 @@ export default function JadwalKonsul() {
     async function fetchData() {
       const result = await lihatSemuaKonsultasi();
       if (result.success) {
-        setJadwalKonsul(result.data);
+        setJadwalKonsul(result?.data);
       } else {
         console.error("Gagal mengambil data jadwal konsultasi");
       }
@@ -60,7 +60,7 @@ export default function JadwalKonsul() {
               trigger="click"
               speaker={
                 <Popover>
-                  {list.map((item, index) => (
+                  {list?.map((item, index) => (
                     <p className="bg-green-100" key={index}>
                       {item.kendala}
                     </p>
@@ -75,7 +75,7 @@ export default function JadwalKonsul() {
 
         return (
           <ul className="calendar-todo-list ">
-          {displayList.map((item, index) => {
+          {displayList?.map((item, index) => {
             const { status } = item;
             const badgeColor =
               status === "selesai"

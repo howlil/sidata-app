@@ -10,7 +10,7 @@ export default async function lihatSemuaKonsultasi() {
     };
 
     try {
-        const url = `${import.meta.env.VITE_API_BASE_URL}/getAllJadwalKonsul`;
+        const url = `${import.meta.env.VITE_API_BASE_URL}/getAllJadwalKonsultasi`;
         const response = await fetch(url, requestOptions);
         if (!response.ok) {
             throw new Error('Network response was not ok');

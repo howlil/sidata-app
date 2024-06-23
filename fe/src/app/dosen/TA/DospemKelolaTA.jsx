@@ -20,8 +20,11 @@ export default function DospemKelolaTA() {
   const navigate = useNavigate();
   const dosenId = getDataFromToken()?.userId;
   const [status, setStatus] = useState({ status: "", statusTA: "" });
+
   const judul = status.status === "diproses" && status.statusTA === "ide";
   const ide = status.status === "diproses" && status.statusTA === "belumAda";
+
+  console.log(status);
 
   useEffect(() => {
     const fetchTADetail = async () => {
@@ -57,6 +60,7 @@ export default function DospemKelolaTA() {
     const idTA = taDetail.idTA;
     const isApproved = statusAcc === "disetujui" ? true : false;
     const id = idDosPem;
+    
     try {
       if (judul) {
         const response = await accJudul(idTA, isApproved, id);

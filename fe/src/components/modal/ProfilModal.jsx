@@ -1,10 +1,12 @@
 import React from 'react';
+import { getDataFromToken } from '@/utils/getDataToken';
 
 const ProfileModal = ({ isOpen, onClose }) => {
-  const links = [
+  const role = getDataFromToken()?.role;
+  let links = [
     { href: '/infoProfil', text: 'Info User' },
     { href: '/ubahSandi', text: 'Ubah Password' },
-    { href: '/sidatabot', text: 'SIDATA BOT' },
+    { href: '/sidatabot', text: 'SIDATA BOT', roles: ['mahasiswa'] },
     {
       text: 'Logout',
       onClick: () => {
@@ -13,6 +15,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
       }
     },
   ];
+
+  links = links.filter(link => !link.roles || link.roles.includes(role));
 
   if (!isOpen) return null;
 

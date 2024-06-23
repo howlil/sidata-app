@@ -7,6 +7,7 @@ import { Tooltip } from 'react-tooltip'
 import RiwayatKonsul from "./RiwayatKonsul";
 import {MessageCircleQuestion} from "lucide-react"
 import { useNavigate } from "react-router-dom";
+import getJumlahBimbinganByMahasiswa from "@/apis/mhs/bimbingan/getjumlahBimbinganByMahasiswa";
 
 export default function DashboardMhs() {
   const navigate = useNavigate();
@@ -15,12 +16,16 @@ export default function DashboardMhs() {
   const id = getDataFromToken()?.userId;
   const [status, setStatus] = useState(null);
   const [statusTA, setStatusTA] = useState(null);
+  const [jumlah, setJumlah] = useState(0);
   
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getTAdetailByIdMahasiswa(id);
+        const res = await getJumlahBimbinganByMahasiswa(id);
+        console.log(res);
+        setJumlah(res.data);
         setStatus(response.data.status);
         setStatusTA(response.data.statusTA);
       } catch (error) {
@@ -48,8 +53,7 @@ export default function DashboardMhs() {
         <CardDashboard
           name="Riwayat Bimbingan TA"
           icon="History"
-          status={status}
-          statusTA={statusTA}
+          data={jumlah||0}
         />
       </section>
         <section className="mt-12">

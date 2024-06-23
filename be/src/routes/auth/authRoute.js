@@ -22,9 +22,9 @@ router.post("/buatAkunMahasiswa", authenticateToken, authorizeRole("admin"), bua
 router.post("/buatAkunDosen", authenticateToken, authorizeRole("admin"), buatAkunDosen);
 router.get("/getAllAkunMhs", authenticateToken, authorizeRole("admin"), getAllAkunMhs);
 router.get("/getAllAkunDosen", authenticateToken, getAllAkunDosen);
-router.get("/getAkunDosenById/:id", authenticateToken, authorizeRole("admin"), akunDosenById);
-router.get("/getAkunMhsById/:id", authenticateToken, authorizeRole("admin"), akunMhsById);
-router.put("/editAkunDosen/:id", authenticateToken, authorizeRole("admin"), editAkunDosen);
+router.get("/getAkunDosenById/:id", authenticateToken, akunDosenById);
+router.get("/getAkunMhsById/:id", authenticateToken, akunMhsById);
+router.put("/editAkunDosen/:id", authenticateToken, editAkunDosen);
 router.put("/editAkunMhs/:id", authenticateToken, authorizeRole("admin"), editAkunMahasiswa);
 
 
