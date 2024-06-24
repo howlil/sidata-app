@@ -297,8 +297,8 @@ const storage = multer.diskStorage({
       file.fieldname === "suratIzinKuliah" ||
       file.fieldname === "buktiKP"
     ) {
-      cb(null, path.join(__dirname, "../../../public/images/filepdf"));
-      console.log(path.join(__dirname, "../../../public/images/filepdf"));
+      cb(null, path.join(__dirname, "../../../public/pdf"));
+      console.log(path.join(__dirname, "../../../public/pdf"));
     } else {
       cb(new Error("Invalid field name"), null);
     }

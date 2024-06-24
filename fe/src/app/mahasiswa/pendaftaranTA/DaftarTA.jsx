@@ -74,13 +74,13 @@ export default function PendaftaranTA() {
 
       if (result.success) {
         setToast({
-          message: "Pendaftaran TA berhasil!",
+          message: result.success,
           isVisible: true,
           isSuccess: true,
         });
       } else {
         setToast({
-          message: "Pendaftaran TA gagal!",
+          message: result.success,
           isVisible: true,
           isSuccess: false,
         });

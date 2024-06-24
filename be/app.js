@@ -1,4 +1,5 @@
 
+import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -54,7 +55,7 @@ app.use("/", server.dashboard);
 
 
 app.use("/fotoUser", express.static("public/images/profile"));
-app.use("/pdf", express.static("public/images/filePdf"));
+app.use("/pdf", express.static("public/images/pdf"));
 
 
 app.use((req, res, next) => {
@@ -107,20 +108,18 @@ app.use((err, req, res, next) => {
     error: err.message,
   });
 });
+
 // Enhanced 404 handler
-app.use((req, res, next) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Not Found',
-    path: req.originalUrl,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
+app.use(function (req, res, next) {
+  next(createError(404));
 });
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
+});
+app.use(function (req, res, next) {
+  res.status(404).json({ message: "Not Found" });
 });
 
 export default app;

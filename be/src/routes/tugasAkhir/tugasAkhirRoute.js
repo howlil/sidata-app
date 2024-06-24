@@ -42,13 +42,9 @@ router.put(
   authorizeRole("mahasiswa"),
   editJudulTA
 );  
-router.post(
-  "/daftarTA",
-  authenticateToken,
-  authorizeRole("mahasiswa"),
-  upload,
-  daftarTA
-);
+
+router.post("/daftarTA", authenticateToken, upload, daftarTA);
+
 router.put(
   "/editDaftarTA",
   authenticateToken,

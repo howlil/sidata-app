@@ -9,7 +9,6 @@ import Layout from "@/components/other/layout";
 export default function PengajuanTA() {
   const id = getDataFromToken()?.userId;
   const [status, setStatus] = useState({ status: "", statusTA: "" });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -51,8 +50,6 @@ export default function PengajuanTA() {
   const TAditerima = status.statusTA === "proposal" && status.status === "disetujui";
   return (
     <>
-      {loading && <p>Loading...</p>}
-
       {baguLogin || pengajuanIde || dosenAcc || dosenNotAcc || ajuinJudul || dosenTolak &&(
         <Layout>
           <Notif text="selesaikan dulu proses pengajuan TA" />
@@ -68,7 +65,6 @@ export default function PengajuanTA() {
           <Notif text="Selamat pendaftaran anda berhasil dan lanjut ke tahap selenjutanya" />
         </Layout>
       )}
-
   
      
     </>
