@@ -60,7 +60,7 @@ const ajukanJadwalBimbinganSchema = yup.object().shape({
           console.log(`Start Time: ${startTime}, End Time: ${endTime}`);
 
           const diffInHours = (endTime - startTime) / 60;
-          console.log(`Difference in Hours: ${diffInHours}`); g
+          console.log(`Difference in Hours: ${diffInHours}`); 
 
           return endTime > startTime && diffInHours === 1;
         },
