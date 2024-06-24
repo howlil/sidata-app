@@ -68,41 +68,96 @@ export default function App() {
             <Route path="/*" element={<NotFound />} />
             <Route path="/login" element={<Auth />} />
             <Route path="/register" element={<Auth />} />
-            <Route path="/ubahSandi" element={
-            <ProtectRoute>
-              <UbahSandi />
-            </ProtectRoute>
-
-            } />
-            <Route path="/infoProfil" element={
-            <ProtectRoute>
-              <InfoProfile />
-            </ProtectRoute>
-
-            } />
+            <Route
+              path="/ubahSandi"
+              element={
+                <ProtectRoute>
+                  <UbahSandi />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/infoProfil"
+              element={
+                <ProtectRoute>
+                  <InfoProfile />
+                </ProtectRoute>
+              }
+            />
 
             {/* mahasiswa */}
-            {/* <Route
+            <Route
               path="/mhs/dashboard"
               element={
                 <ProtectRoute>
                   <ProtectedMhsDashboard />
                 </ProtectRoute>
               }
-            /> */}
-            <Route path="/mhs/dashboard" element={<DashboardMhs />} />
-            <Route path="/mhs/pendaftaranTA" element={<PendaftaranTA />} />
-            <Route path="/mhs/pengajuanTA" element={<PengajuanTA />} />
-            <Route path="/mhs/dokumen" element={<Dokumen />} />
+            />
+            <Route
+              path="/mhs/pendaftaranTA"
+              element={
+                <ProtectRoute>
+                  <ProtectedPendaftaranTA />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/mhs/pengajuanTA"
+              element={
+                <ProtectRoute>
+                  <ProtectedPengajuanTA />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/mhs/dokumen"
+              element={
+                <ProtectRoute>
+                  <ProtectedDokumen />
+                </ProtectRoute>
+              }
+            />
 
-            <Route path="/mhs/ajukanJadwalKonsultasi" element={<AjukanKonsultasi />} />
+            <Route
+              path="/mhs/ajukanJadwalKonsultasi"
+              element={
+                <ProtectRoute>
+                  <ProtectedAjukanKonsultasi />
+                </ProtectRoute>
+              }
+            />
 
+            <Route path="/mhs/bimbinganTA" element={
+              <ProtectRoute>
+                <ProtectedBimbingaTA />
+              </ProtectRoute>
+            } />
+            <Route
+              path="/mhs/bimbinganTA/ajukan"
+              element={
+                <ProtectRoute>
+                  <ProtectedAjukanBimbingan />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/mhs/bimbinganTA/:id"
+              element={
+                <ProtectRoute>
+                  <ProtectedDetailBimbingan />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/sidatabot"
+              element={
+                <ProtectRoute>
+                  <ProtectedChatBot />
+                </ProtectRoute>
+              }
+            />
 
-            <Route path="/mhs/bimbinganTA" element={<BimbingaTA />} />
-            <Route path="/mhs/bimbinganTA/ajukan" element={<AjukanBimbingan />} />
-            <Route path="/mhs/bimbinganTA/:id" element={<DetailBimbingan />} />
-            <Route path="/sidatabot" element={<ChatBot />} />
-            
             {/* Admin */}
             <Route
               path="/admin/dashboard"
@@ -112,25 +167,72 @@ export default function App() {
                 </ProtectRoute>
               }
             />
-            <Route path="/admin/listMhsKonsul/:id" element={<DetailKonsulMhs />} />
-             <Route path="/admin/listMhsKonsul" element={<ListKonsul />} />
-              <Route path="/admin/listPendaftarTA" element={<ListTA />} />
-              <Route path="/admin/listPendaftarTA/:id" element={<DetailTAMhs />} />
-              
-             <Route path="/admin/data/dataMhs" element={<DataMhs />} />
-             <Route path="/admin/data/dataDosen" element={<DataDosen />} />
-             <Route path="/admin/data/dataDosen/tambahAkun" element={<KelolaAkunDosen />} />
-             <Route path="/admin/data/dataMhs/tambahAkun" element={<KelolaAkunMhs />} />
-             <Route path="/admin/data/dataMhs/editAkun/:id" element={<KelolaAkunMhs />} />
-             <Route path="/admin/data/dataDosen/editAkun/:id" element={<KelolaAkunDosen />} />
+            <Route
+              path="/admin/listMhsKonsul/:id"
+              element={
+                <ProtectRoute>
+                  <ProtectedListKonsul />
+                </ProtectRoute>
+              }
+            />
 
+            <Route
+              path="/admin/listMhsKonsul"
+              element={
+                <ProtectRoute>
+                  <ProtectedListKonsul />
+                </ProtectRoute>
+              }
+            />
+
+            <Route
+              path="/admin/listPendaftarTA"
+              element={
+                <ProtectRoute>
+                  <ProtectedListTA />
+                </ProtectRoute>
+              }
+            />
+            <Route
+              path="/admin/listPendaftarTA/:id"
+              element={<DetailTAMhs />}
+            />
+
+            <Route path="/admin/data/dataMhs" element={<DataMhs />} />
+            <Route path="/admin/data/dataDosen" element={<DataDosen />} />
+            <Route
+              path="/admin/data/dataDosen/tambahAkun"
+              element={<KelolaAkunDosen />}
+            />
+            <Route
+              path="/admin/data/dataMhs/tambahAkun"
+              element={<KelolaAkunMhs />}
+            />
+            <Route
+              path="/admin/data/dataMhs/editAkun/:id"
+              element={<KelolaAkunMhs />}
+            />
+            <Route
+              path="/admin/data/dataDosen/editAkun/:id"
+              element={<KelolaAkunDosen />}
+            />
 
             {/* Dosen */}
-             <Route path="/dosen/dashboard" element={<Dashboard />} />
-             <Route path="/dosen/kelolaTaMahasiswa" element={<HandleTA />} />
-             <Route path="/dosen/detailTA/:id" element={<DospemKelolaTA />} />
-             <Route path="/dosen/bimbinganMahasiswa" element={<BimbinganTA />} />
-             <Route path="/dosen/bimbinganMahasiswa/:id" element={<DetailBimbinganMhs />} />
+            <Route
+              path="/dosen/dashboard"
+              element={
+                <ProtectRoute>
+                  <ProtectedDosenDashboard />
+                </ProtectRoute>
+              }
+            />
+            <Route path="/dosen/kelolaTaMahasiswa" element={<HandleTA />} />
+            <Route path="/dosen/detailTA/:id" element={<DospemKelolaTA />} />
+            <Route path="/dosen/bimbinganMahasiswa" element={<BimbinganTA />} />
+            <Route
+              path="/dosen/bimbinganMahasiswa/:id"
+              element={<DetailBimbinganMhs />}
+            />
 
             {/* Tambahkan rute dosen di sini jika diperlukan */}
           </Routes>
