@@ -35,7 +35,7 @@ const ajukanJadwalKonsulProdiSchema = yup.object().shape({
     .when("waktuMulai", (waktuMulai, schema) => {
       return schema.test({
         test: (waktuSelesai) => {
-          const [startTimeStr] = waktuMulai; // Destructuring to get the string value from array
+          const [startTimeStr] = waktuMulai; 
           
           if (!startTimeStr || typeof startTimeStr !== 'string') {
             return false;
@@ -54,10 +54,10 @@ const ajukanJadwalKonsulProdiSchema = yup.object().shape({
           const startTime = startHour * 60 + startMinute;
           const endTime = endHour * 60 + endMinute;
 
-          console.log(`Start Time: ${startTime}, End Time: ${endTime}`); // Debugging
+          console.log(`Start Time: ${startTime}, End Time: ${endTime}`); 
 
           const diffInHours = (endTime - startTime) / 60;
-          console.log(`Difference in Hours: ${diffInHours}`); // Debugging
+          console.log(`Difference in Hours: ${diffInHours}`); 
 
           return endTime > startTime && diffInHours === 1;
         },
