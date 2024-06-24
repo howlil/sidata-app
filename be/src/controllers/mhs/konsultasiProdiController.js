@@ -2,12 +2,16 @@ import prisma from "../../config/db.js";
 import * as yup from "yup";
 import { status } from "../../config/typeEnum.js";
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
 const ajukanJadwalKonsulProdiSchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   kendala: yup.string().required("Kendala wajib diisi"),
   tanggal: yup
     .date()
     .required("Tanggal wajib diisi")
+    .min(today, "Tanggal tidak boleh lebih awal dari hari ini")
     .test("is-weekday", "Tanggal hanya bisa di hari Senin - Kamis", (value) => {
       const day = new Date(value).getDay();
       return day >= 1 && day <= 4;

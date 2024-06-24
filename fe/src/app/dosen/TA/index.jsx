@@ -10,14 +10,22 @@ export default function HandleTA() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const id = getDataFromToken()?.userId
+  const id = getDataFromToken()?.userId;
+  const [status, setStatus] = useState({ status: "", statusTA: "" });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllTAMahasiswaByDosPemId(id);
-        if (response.success) {
-          setData(response.data);
+        if (response?.success) {
+          setData(response?.data);
+          response.data.map((data) => {
+            setStatus({
+              status: data?.status,
+              statusTA: data?.statusTA,
+            });
+          })
+        
         } else {
           setError(response.message);
         }
@@ -30,11 +38,13 @@ export default function HandleTA() {
 
     fetchData();
   }, [id]);
-  const handleEdit = (row) => {{
-    console.log(row);
-    const id = row.idMahasiswa;
-    navigate(`/dosen/detailTA/${id}`);
-  }}
+  const handleEdit = (row) => {
+    {
+      console.log(row);
+      const id = row.idMahasiswa;
+      navigate(`/dosen/detailTA/${id}`);
+    }
+  };
 
   const columns = [
     {
@@ -63,8 +73,25 @@ export default function HandleTA() {
           <p>Loading...</p>
         ) : error ? (
           <p>Error: {error}</p>
+        ) : status.status === "disetujui" || status.status === "ditolak" ? (
+          <Tables
+            columns={columns}
+            data={data}
+            del="hidden"
+            down={"hidden"}
+            show={"hidden"}
+            edit={"hidden"}
+            aksi={"hidden"}
+          />
         ) : (
-          <Tables columns={columns} data={data} del="hidden" down={"hidden"} show={"hidden"} onEdit={(row)=>handleEdit(row)} />
+          <Tables
+            columns={columns}
+            data={data}
+            del="hidden"
+            down={"hidden"}
+            show={"hidden"}
+            onEdit={(row) => handleEdit(row)}
+          />
         )}
       </section>
     </Layout>

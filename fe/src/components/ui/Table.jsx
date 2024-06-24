@@ -3,7 +3,7 @@ const getNestedProperty = (obj, path) => {
   return path.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : undefined, obj);
 }
 
-const Tables = ({ columns, data, onEdit, onDelete,edit,del,show,onShowm,down,onDown }) => {
+const Tables = ({ columns, data, onEdit, onDelete,edit,del,show,onShow,down,onDown,aksi }) => {
   
   return (
     <table className="w-full  ">
@@ -13,7 +13,7 @@ const Tables = ({ columns, data, onEdit, onDelete,edit,del,show,onShowm,down,onD
           {columns?.map((column, index) => (
             <th className="py-2.5   font-medium text-start pl-4" key={index}>{column.header}</th>
           ))}
-          <th className="text-end  font-normal  pr-6">Aksi</th>
+          <th className={`text-end  font-normal  pr-6 ${aksi}`}>Aksi</th>
         </tr>
       </thead>
       <tbody>

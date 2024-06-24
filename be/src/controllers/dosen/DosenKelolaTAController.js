@@ -41,7 +41,7 @@ export const accIdeTA = async (req, res) => {
     }
     const dosen = dosenPembimbing.Dosen;
 
-    if (isApproved && dosen.kuotaAktif >= 5) {
+    if (isApproved && dosen.kuotaMhdBimbingan >= 5) {
       return res
         .status(400)
         .json({ success: false, message: "Dosen sudah mencapai batas maksimal 5 TA yang disetujui" });
@@ -147,7 +147,6 @@ export const accIdeTA = async (req, res) => {
             status: status.disetujui,
           },
         });
-        console.log("pass");
 
         if (allApproved.length === 2) {
           const updatedTA = await prisma.tA.update({
@@ -157,7 +156,8 @@ export const accIdeTA = async (req, res) => {
               statusTA: statusTA.ide,
             },
           });
-          await prisma.dosen.updateMany({
+          
+          const updateDosenResult = await prisma.dosen.updateMany({
             where: { idDosen: { in: allApproved.map(a => a.dosenPembimbingID) } },
             data: {
               kuotaMhdBimbingan: {
@@ -165,13 +165,19 @@ export const accIdeTA = async (req, res) => {
               },
             },
           });
-
-
+    
+          console.log("Update Dosen Result:", updateDosenResult);
 
           return res.status(200).json({
             success: true,
             message: "Ide TA diterima oleh kedua pembimbing",
             data: updatedTA,
+          });
+        }else {
+          return res.status(200).json({
+            success: true,
+            message: "Persetujuan diterima, menunggu persetujuan dari pembimbing lain",
+            data: { status: 'diproses', statusTA: 'belumAda' },
           });
         }
       }
@@ -328,7 +334,14 @@ export const accJudulTA = async (req, res) => {
             message: "Judul TA diterima oleh kedua pembimbing",
             data: updatedTA,
           });
+        }else {
+          return res.status(200).json({
+            success: true,
+            message: "Persetujuan diterima, menunggu persetujuan dari pembimbing lain",
+            data: { status: 'diproses', statusTA: 'belumAda' },
+          });
         }
+    
       }
     }
   } catch (error) {

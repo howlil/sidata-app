@@ -15,17 +15,16 @@ export default function PengajuanTA() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log(status);
   useEffect(() => {
     fetchData();
   }, []);
   const fetchData = async () => {
     try {
       const response = await getTAdetailByIdMahasiswa(id);
-      if (response.success) {
+      if (response?.success) {
         setStatus({
-          status: response.data.status,
-          statusTA: response.data.statusTA,
+          status: response?.data.status,
+          statusTA: response?.data.statusTA,
         });
       } else {
         setError(response.message);

@@ -78,13 +78,13 @@ export default function JadwalKonsul() {
           {displayList?.map((item, index) => {
             const { status } = item;
             const badgeColor =
-              status === "selesai"
+              status === "disetujui"
                 ? "green"
                 : status === "diproses"
                 ? "yellow"
                 : "red";
             const bgColor =
-              status === "selesai"
+              status === "disetujui"
                 ? "bg-green-100"
                 : status === "diproses"
                 ? "bg-yellow-100"

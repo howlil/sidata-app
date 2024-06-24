@@ -24,10 +24,9 @@ export default function DashboardMhs() {
       try {
         const response = await getTAdetailByIdMahasiswa(id);
         const res = await getJumlahBimbinganByMahasiswa(id);
-        console.log(res);
-        setJumlah(res.data);
-        setStatus(response.data.status);
-        setStatusTA(response.data.statusTA);
+        setJumlah(res?.data);
+        setStatus(response?.data.status);
+        setStatusTA(response?.data.statusTA);
       } catch (error) {
         console.log(error);
       }

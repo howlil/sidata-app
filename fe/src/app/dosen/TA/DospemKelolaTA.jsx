@@ -10,6 +10,7 @@ import TextArea from "@/components/ui/TextArea";
 import { getDataFromToken } from "@/utils/getDataToken";
 import StatusTA from "@/components/ui/StatusTA";
 import accJudul from "@/apis/dosen/TA/accJudul";
+import Toast from "@/components/ui/Toast";
 
 export default function DospemKelolaTA() {
   const { id } = useParams();
@@ -20,20 +21,25 @@ export default function DospemKelolaTA() {
   const navigate = useNavigate();
   const dosenId = getDataFromToken()?.userId;
   const [status, setStatus] = useState({ status: "", statusTA: "" });
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: "",
+    isSuccess: true,
+  });
+
 
   const judul = status.status === "diproses" && status.statusTA === "ide";
   const ide = status.status === "diproses" && status.statusTA === "belumAda";
 
-  console.log(status);
 
   useEffect(() => {
     const fetchTADetail = async () => {
       try {
         const response = await getTAdetailByIdMahasiswa(id);
-        if (response.success) {
+        if (response?.success) {
           setStatus({
-            status: response.data.status,
-            statusTA: response.data.statusTA,
+            status: response?.data.status,
+            statusTA: response?.data.statusTA,
           });
         }
         response.data.DosenPembimbingTA.find((id) => {
@@ -41,14 +47,25 @@ export default function DospemKelolaTA() {
             setIdDosPem(id.dosenPembimbingID);
           }
         });
-        if (response.success) {
-          setTaDetail(response.data);
+        if (response?.success) {
+          setTaDetail(response?.data);
+          setToast({
+            isVisible: true,
+            message: response?.message,
+            isSuccess: false,
+          });
         } else {
-          setError(response.message);
+          setError(response?.message);
+          setToast({
+            isVisible: true,
+            message: response?.message,
+            isSuccess: false,
+          });
+          
         }
-      } catch (err) {
+      } catch (error) {
         setError("Terjadi kesalahan saat mengambil detail TA");
-        console.error("Fetch error:", err);
+
       }
     };
 
@@ -60,32 +77,51 @@ export default function DospemKelolaTA() {
     const idTA = taDetail.idTA;
     const isApproved = statusAcc === "disetujui" ? true : false;
     const id = idDosPem;
-    
     try {
       if (judul) {
         const response = await accJudul(idTA, isApproved, id);
-        if (response.success) {
+        if (response?.success) {
           setTaDetail({
             ...taDetail,
-            statusTA: response.data.statusTA,
-            status: response.data.status,
+            statusTA: response?.data.statusTA,
+            status: response?.data.status,
           });
-          navigate("/dosen/kelolaTaMahasiswa");
+          setToast({
+            isVisible: true,
+            message: response?.message || "Judul TA berhasil disetujui",
+            isSuccess: true,
+          });
+          setTimeout (() => {
+            navigate("/dosen/kelolaTaMahasiswa");
+          }, 1000);
         } else {
-          setError(response.message);
+          setError(response?.message);
         }
       }
       if (ide) {
         const response = await accIdeTa(idTA, isApproved, id);
-        if (response.success) {
+        console.log(response);
+        if (response?.success) {
           setTaDetail({
             ...taDetail,
-            statusTA: response.data.statusTA,
-            status: response.data.status,
+            statusTA: response?.data.statusTA,
+            status: response?.data.status,
           });
-          navigate("/dosen/kelolaTaMahasiswa");
+          setToast({
+            isVisible: true,
+            message: response?.message || "Ide TA berhasil disetujui",
+            isSuccess: true,
+          });
+          setTimeout (() => {
+            navigate("/dosen/kelolaTaMahasiswa");
+          }, 1000);
         } else {
-          setError(response.message);
+          setError(response?.message);
+          setToast({
+            isVisible: true,
+            message: response?.message,
+            isSuccess: false,
+          });
         }
       }
     } catch (err) {
@@ -161,6 +197,12 @@ export default function DospemKelolaTA() {
             <Button custom="mt-8">Simpan</Button>
           </div>
         </form>
+        <Toast
+        message={toast.message}
+        isVisible={toast.isVisible}
+        onClose={() => setToast({ ...toast, isVisible: false })}
+        isSuccess={toast.isSuccess}
+      />
       </div>
     </Layout>
   );

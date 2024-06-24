@@ -2,6 +2,10 @@ import prisma from "../../config/db.js";
 import * as yup from "yup";
 import { status } from "../../config/typeEnum.js";
 
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
 const ajukanJadwalBimbinganSchema = yup.object().shape({
   idMahasiswa: yup.string().required("ID Mahasiswa wajib diisi"),
   dosPembimbingId: yup.string().required("ID Dosen Pembimbing wajib diisi"),
@@ -10,6 +14,7 @@ const ajukanJadwalBimbinganSchema = yup.object().shape({
   tanggal: yup
     .date()
     .required("Tanggal wajib diisi")
+    .min(today, "Tanggal tidak boleh lebih awal dari hari ini")
     .test("is-weekday", "Tanggal hanya bisa di hari Senin - Kamis", (value) => {
       const day = new Date(value).getDay();
       return day >= 1 && day <= 4;
@@ -33,7 +38,7 @@ const ajukanJadwalBimbinganSchema = yup.object().shape({
     .when("waktuMulai", (waktuMulai, schema) => {
       return schema.test({
         test: (waktuSelesai) => {
-          const [startTimeStr] = waktuMulai; // Destructuring to get the string value from array
+          const [startTimeStr] = waktuMulai; 
           
           if (!startTimeStr || typeof startTimeStr !== 'string') {
             return false;
@@ -52,10 +57,10 @@ const ajukanJadwalBimbinganSchema = yup.object().shape({
           const startTime = startHour * 60 + startMinute;
           const endTime = endHour * 60 + endMinute;
 
-          console.log(`Start Time: ${startTime}, End Time: ${endTime}`); // Debugging
+          console.log(`Start Time: ${startTime}, End Time: ${endTime}`);
 
           const diffInHours = (endTime - startTime) / 60;
-          console.log(`Difference in Hours: ${diffInHours}`); // Debugging
+          console.log(`Difference in Hours: ${diffInHours}`); g
 
           return endTime > startTime && diffInHours === 1;
         },

@@ -40,13 +40,13 @@ export default function PengajuanIde() {
         const response = await getAllBidang();
         if (response.success) {
           setBidangOptions(
-            response.data.map((bidang) => ({
+            response.data?.map((bidang) => ({
               value: bidang.bidangId,
               label: bidang.namaBidang,
             }))
           );
         } else {
-          setError(response.message);
+          setError(response?.message);
         }
       } catch (error) {
         setError("Terjadi kesalahan saat mengambil data bidang");
@@ -64,7 +64,7 @@ export default function PengajuanIde() {
           const response = await getDosenByBidang(bidangId);
           if (response?.success) {
             setDosenOptions(
-              response?.data.map((dosen) => ({
+              response?.data?.map((dosen) => ({
                 value: dosen.idDosen,
                 name: dosen.nama,
                 jabatanId: dosen.jabatanId,
@@ -76,13 +76,13 @@ export default function PengajuanIde() {
             );
             console.log(pembimbingResponse);
             if (pembimbingResponse?.success) {
-              setDosenPembimbingData(pembimbingResponse.data);
+              setDosenPembimbingData(pembimbingResponse?.data);
             } else {
               setDosenPembimbingData([]);
-              setError(pembimbingResponse.message);
+              setError(pembimbingResponse?.message);
             }
           } else {
-            setError(response.message);
+            setError(response?.message);
             setDosenOptions([]);
           }
         } catch (error) {
@@ -94,14 +94,14 @@ export default function PengajuanIde() {
           const response = await getAllAkunDosen();
           if (response?.success) {
             setDosenOptions(
-              response?.data.map((dosen) => ({
+              response?.data?.map((dosen) => ({
                 value: dosen.idDosen,
                 name: dosen.nama,
                 jabatanId: dosen.jabatanId,
               }))
             );
           } else {
-            setError(response.message);
+            setError(response?.message);
           }
         } catch (error) {
           setError("Terjadi kesalahan saat mengambil data semua dosen");
@@ -119,8 +119,7 @@ export default function PengajuanIde() {
 
   const handleSelectDosen = (selectedDosen) => {
     setSelectedDosen((prev) => {
-      console.log(prev, selectedDosen);
-      if (prev.includes(selectedDosen.value)) {
+    if (prev.includes(selectedDosen.value)) {
         return prev.filter((dosen) => dosen !== selectedDosen.value);
       } else {
         return [...prev, selectedDosen.value];
@@ -132,7 +131,7 @@ export default function PengajuanIde() {
     const pembimbingData = dosenPembimbingData.filter((pembimbing) =>
       dosenList.some((dosen) => dosen.value === pembimbing.Dosen.idDosen)
     );
-    const uniqueDosenIds = [ ...new Set(pembimbingData.map((pembimbing) => pembimbing.Dosen.idDosen)),  ];
+    const uniqueDosenIds = [ ...new Set(pembimbingData?.map((pembimbing) => pembimbing.Dosen.idDosen)),  ];
 
     const getRank = async (jabatanId, idDosen) => {
       const jabatanResponse = await getJabatanById(jabatanId);
@@ -186,7 +185,7 @@ export default function PengajuanIde() {
         ];
       }
     }
-    return dosenList.map(dosen => ({ id: dosen.id }));
+    return dosenList?.map(dosen => ({ id: dosen.id }));
   };
 
   
@@ -207,7 +206,7 @@ export default function PengajuanIde() {
         ideTA,
         deskripsiIde,
         bidangId,
-        dosenPembimbingIDs: pembimbingList.map((dosen) => ({
+        dosenPembimbingIDs: pembimbingList?.map((dosen) => ({
           dosenPembimbingID: dosen.id,
         })),
       });

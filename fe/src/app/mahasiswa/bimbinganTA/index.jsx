@@ -13,7 +13,7 @@ export default function BimbingaTA() {
   const navigate = useNavigate()
   useEffect(() => {
     getJadwalBimbinganByMahasiswa(id).then((res) => {
-      const formattedData = res.data?.map(item => ({
+      const formattedData = res?.data?.map(item => ({
         ...item,
         tanggal: item.tanggal.split('T')[0] 
       }));
@@ -32,6 +32,7 @@ export default function BimbingaTA() {
         del="hidden"
         edit="hidden"
         down="hidden"
+        onShow={(row) => {navigate(`/mhs/bimbinganTA/${row.id}`) }}
         columns={
           [
             {
